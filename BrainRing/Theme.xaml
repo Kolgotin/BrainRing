@@ -1,0 +1,65 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=System.Runtime">
+    <system:Double x:Key="MaxFontSize">44</system:Double>
+    <system:Double x:Key="BigFontSize">36</system:Double>
+    <system:Double x:Key="NormalFontSize">28</system:Double>
+    <system:Double x:Key="MiniFontSize">20</system:Double>
+
+    <Style TargetType="{x:Type Grid}">
+        <Setter Property="Background" Value="AliceBlue"/>
+    </Style>
+    <Style TargetType="{x:Type Button}">
+        <Setter Property="FontSize" Value="{StaticResource BigFontSize}"/>
+        <Setter Property="Margin" Value="5"/>
+        <Setter Property="BorderBrush" Value="DarkBlue"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="Background" Value="#FFB0F0FF"/>
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="BorderBrush" Value="DarkBlue"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Background" Value="#FFD0F8FF"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style TargetType="{x:Type TextBlock}">
+        <Setter Property="FontSize" Value="{StaticResource BigFontSize}"/>
+        <Setter Property="Foreground" Value="MediumBlue"/>
+        <Setter Property="Margin" Value="5"/>
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="SteelBlue"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style TargetType="{x:Type TextBox}">
+        <Setter Property="FontSize" Value="{StaticResource BigFontSize}"/>
+        <Setter Property="Margin" Value="5"/>
+    </Style>
+    <Style TargetType="{x:Type DataGrid}">
+        <Setter Property="Margin" Value="5"/>
+        <Setter Property="AutoGenerateColumns" Value="False"/>
+        <Setter Property="CanUserAddRows" Value="False"/>
+        <Setter Property="CanUserResizeColumns" Value="False"/>
+        <Setter Property="CanUserDeleteRows" Value="False"/>
+        <Setter Property="CanUserReorderColumns" Value="False"/>
+        <Setter Property="CanUserResizeRows" Value="False"/>
+        <Setter Property="CanUserSortColumns" Value="False"/>
+        <Setter Property="SelectionMode" Value="Single"/>
+        <Setter Property="GridLinesVisibility" Value="None"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    <Style TargetType="{x:Type DataGridCell}">
+        <Setter Property="FontSize" Value="{StaticResource BigFontSize}"/>
+        <Setter Property="Foreground" Value="MediumBlue"/>
+        <Setter Property="Background" Value="AliceBlue" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Style.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Foreground" Value="MediumBlue"/>
+                <Setter Property="BorderThickness" Value="0" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+</ResourceDictionary>

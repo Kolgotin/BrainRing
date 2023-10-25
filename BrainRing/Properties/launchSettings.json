@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "BrainRing": {
+      "commandName": "Project",
+      "commandLineArgs": "edit"
+    }
+  }
+}

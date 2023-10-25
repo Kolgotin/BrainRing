@@ -1,0 +1,37 @@
+﻿<UserControl x:Class="BrainRing.UI.SetPlayers.SetPlayersView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:BrainRing.UI.SetPlayers"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance local:SetPlayersViewModel}">
+    <Grid>
+        <StackPanel VerticalAlignment="Center">
+            <TextBlock Text="Добавить игроков"/>
+            <DataGrid ItemsSource="{Binding Players}"
+                      HeadersVisibility="Column">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Имя"
+                                        Width="5*"
+                                        Binding="{Binding Name}"/>
+                    <DataGridTemplateColumn Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Удалить"
+                                        Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl},
+                                    Path=DataContext.RemovePlayerCommand}"
+                                        CommandParameter="{Binding}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+            <Button Content="Добавить игрока"
+                    Command="{Binding AddPlayerCommand}"/>
+            <Button Content="Далее"
+                    Command="{Binding GoNextCommand}"/>
+        </StackPanel>
+    </Grid>
+</UserControl>
