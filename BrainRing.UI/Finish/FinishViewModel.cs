@@ -8,8 +8,11 @@ namespace BrainRing.UI.Finish;
 
 public class FinishViewModel : AbstractStageContainer
 {
+    private FinishStage _finishStage;
+
     public FinishViewModel(FinishStage finishStage)
     {
+        _finishStage = finishStage;
         Players = finishStage.Players
             .Select(x=> new PlayerViewModel(x))
             .OrderByDescending(x => x.Score)
@@ -20,6 +23,6 @@ public class FinishViewModel : AbstractStageContainer
 
     public override IStage NextStage()
     {
-        throw new System.NotImplementedException();
+        return _finishStage.Next();
     }
 }

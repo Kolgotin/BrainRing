@@ -1,13 +1,8 @@
-﻿using System.CodeDom.Compiler;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Windows.Input;
 using BrainRing.Core.Game;
-using BrainRing.Core.Interfaces;
-using BrainRing.Managers;
 using BrainRing.UI.Common;
 using CommunityToolkit.Mvvm.Input;
-using DynamicData.Binding;
-using Microsoft.Win32;
 
 namespace BrainRing.UI.Edit;
 
@@ -15,8 +10,16 @@ public class ProcessEditViewModel : AbstractGoNextCommandContainer
 {
     private object _currentContent;
 
-    public ProcessEditViewModel(Pack? pack = null)
+    private readonly PackViewModel _currentPack;
+    private RoundViewModel? _currentRound;
+    private TopicViewModel? _currentTopic;
+    private QuestionViewModel? _currentQuestion;
+
+    private readonly string? _fileName;
+
+    public ProcessEditViewModel(string? filename, Pack? pack = null)
     {
+        _fileName = filename;
         _currentPack = new PackViewModel(pack);
         _currentContent = _currentPack;
         GoToPackCommand = new AsyncRelayCommand(ExecuteGoToPack);
@@ -32,11 +35,6 @@ public class ProcessEditViewModel : AbstractGoNextCommandContainer
     public ICommand GoToQuestionCommand { get; }
 
     public ICommand SaveJsonCommand { get; }
-
-    private readonly PackViewModel _currentPack;
-    private RoundViewModel? _currentRound;
-    private TopicViewModel? _currentTopic;
-    private QuestionViewModel? _currentQuestion;
 
     public object CurrentContent
     {
@@ -92,16 +90,12 @@ public class ProcessEditViewModel : AbstractGoNextCommandContainer
         return Task.CompletedTask;
     }
 
-    private Task ExecuteSaveJson()
+    private async Task ExecuteSaveJson()
     {
         var pack = _currentPack.GetPack();
-        var saveFileDialog = new SaveFileDialog();
-        saveFileDialog.Filter = "json |*.json";
-        saveFileDialog.FileName = "default";
-        if (saveFileDialog.ShowDialog() == true)
-            FileManager.WriteFileManager(pack, saveFileDialog.FileName);
-
-        return Task.CompletedTask;
+        if (await ShowDialogService.SavePack(pack, _fileName))
+            await ShowDialogService.ShowInfo("Файл успешно сохранён");
+        else
+            await ShowDialogService.ShowError("Ошибка при сохранении файла");
     }
-
 }

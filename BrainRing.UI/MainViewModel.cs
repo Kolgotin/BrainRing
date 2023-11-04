@@ -15,7 +15,7 @@ public class MainViewModel : AbstractNotifyPropertyChanged
 
     public MainViewModel()
     {
-        StageViewModel = StageViewModelFactory.Create();
+        _stageViewModel = StageViewModelFactory.Create();
         StageViewModel.GoNextCommand = new AsyncRelayCommand(ChangeStage);
     }
     
@@ -25,7 +25,7 @@ public class MainViewModel : AbstractNotifyPropertyChanged
         set => SetAndRaise(ref _stageViewModel, value);
     }
     
-    private Task ChangeStage()
+    private async Task ChangeStage()
     {
         try
         {
@@ -35,9 +35,7 @@ public class MainViewModel : AbstractNotifyPropertyChanged
         }
         catch (Exception e)
         {
-            //todo обработать бы
+            await ShowDialogService.ShowError(e.Message);
         }
-
-        return Task.CompletedTask;
     }
 }

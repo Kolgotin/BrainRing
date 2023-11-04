@@ -53,74 +53,87 @@
             <ContentControl.Resources>
                 <ResourceDictionary>
                     <DataTemplate DataType="{x:Type common:RoundViewModel}">
-                        <DataGrid ItemsSource="{Binding Topics}"
-                                  VerticalAlignment="Center"
-                                  HorizontalAlignment="Stretch"
-                                  HeadersVisibility="None">
-                            <DataGrid.Resources>
-                                <ResourceDictionary>
-                                    <Style TargetType="{x:Type DataGridCell}"
-                                           BasedOn="{StaticResource {x:Type DataGridCell}}">
-                                        <Setter Property="FontSize" Value="{StaticResource BigFontSize}"/>
-                                    </Style>
-                                </ResourceDictionary>
-                            </DataGrid.Resources>
-                            <DataGrid.Columns>
-                                <DataGridTemplateColumn>
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Grid>
-                                                <TextBlock Text="{Binding Name}"
-                                                           VerticalAlignment="Center"/>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Width="*">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <ListBox ItemsSource="{Binding Questions}"
-                                                     HorizontalAlignment="Center"
-                                                     HorizontalContentAlignment="Center"
-                                                     Background="AliceBlue"
-                                                     BorderThickness="0">
-                                                <ListBox.Resources>
-                                                    <ResourceDictionary>
-                                                        <Style TargetType="{x:Type ListBoxItem}">
-                                                            <Setter Property="Padding" Value="5"/>
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding IsAnswered}"
-                                                                             Value="True">
-                                                                    <Setter Property="IsEnabled" Value="False"/>
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </ResourceDictionary>
-                                                </ListBox.Resources>
-                                                <ListBox.ItemsPanel>
-                                                    <ItemsPanelTemplate>
-                                                        <StackPanel Orientation="Horizontal"
-                                                        HorizontalAlignment="Stretch"/>
-                                                    </ItemsPanelTemplate>
-                                                </ListBox.ItemsPanel>
-                                                <ListBox.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <Button Margin="0"
-                                                                Padding="5"
-                                                                Width="150"
-                                                                Content="{Binding Cost}"
-                                                                Command="{Binding
-                                                            RelativeSource={RelativeSource AncestorType=UserControl}, 
-                                                            Path=DataContext.ShowQuestionCommand}"
-                                                                CommandParameter="{Binding}"/>
-                                                    </DataTemplate>
-                                                </ListBox.ItemTemplate>
-                                            </ListBox>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <DataGrid ItemsSource="{Binding Topics}"
+                                      VerticalAlignment="Center"
+                                      HorizontalAlignment="Stretch"
+                                      HeadersVisibility="None">
+                                <DataGrid.Resources>
+                                    <ResourceDictionary>
+                                        <Style TargetType="{x:Type DataGridCell}"
+                                               BasedOn="{StaticResource {x:Type DataGridCell}}">
+                                            <Setter Property="FontSize" Value="{StaticResource BigFontSize}"/>
+                                        </Style>
+                                    </ResourceDictionary>
+                                </DataGrid.Resources>
+                                <DataGrid.Columns>
+                                    <DataGridTemplateColumn>
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <TextBlock Text="{Binding Name}"
+                                                               VerticalAlignment="Center"/>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Width="*">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <ListBox ItemsSource="{Binding Questions}"
+                                                         HorizontalAlignment="Center"
+                                                         HorizontalContentAlignment="Center"
+                                                         Background="AliceBlue"
+                                                         BorderThickness="0">
+                                                    <ListBox.Resources>
+                                                        <ResourceDictionary>
+                                                            <Style TargetType="{x:Type ListBoxItem}">
+                                                                <Setter Property="Padding" Value="5"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsAnswered}"
+                                                                                 Value="True">
+                                                                        <Setter Property="IsEnabled" Value="False"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </ResourceDictionary>
+                                                    </ListBox.Resources>
+                                                    <ListBox.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <StackPanel Orientation="Horizontal"
+                                                            HorizontalAlignment="Stretch"/>
+                                                        </ItemsPanelTemplate>
+                                                    </ListBox.ItemsPanel>
+                                                    <ListBox.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Button Margin="0"
+                                                                    Padding="5"
+                                                                    Width="150"
+                                                                    Content="{Binding Cost}"
+                                                                    Command="{Binding
+                                                                RelativeSource={RelativeSource AncestorType=UserControl}, 
+                                                                Path=DataContext.ShowQuestionCommand}"
+                                                                    CommandParameter="{Binding}"/>
+                                                        </DataTemplate>
+                                                    </ListBox.ItemTemplate>
+                                                </ListBox>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                            <Button Grid.Row="1"
+                                    HorizontalAlignment="Right"
+                                    Content="Завершить раунд"
+                                    Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl},
+                                Path=DataContext.FinishRoundCommand}"/>
+                        </Grid>
                     </DataTemplate>
 
                     <DataTemplate DataType="{x:Type common:QuestionViewModel}">
@@ -162,8 +175,15 @@
                             <Button Margin="11"
                                     Command="{Binding
                                             RelativeSource={RelativeSource AncestorType=UserControl},
+                                            Path=DataContext.ReturnToQuestionCommand}">
+                                <TextBlock Text="Вернуться"
+                                           Foreground="Red"/>
+                            </Button>
+                            <Button Margin="11"
+                                    Command="{Binding
+                                            RelativeSource={RelativeSource AncestorType=UserControl},
                                             Path=DataContext.SelectAnsweringCommand}">
-                                <TextBlock Text="Отмена"
+                                <TextBlock Text="Никто не ответил"
                                            Foreground="Red"/>
                             </Button>
                         </StackPanel>

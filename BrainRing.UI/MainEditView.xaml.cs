@@ -10,6 +10,5 @@ public partial class MainEditView : UserControl
     public MainEditView()
     {
         InitializeComponent();
-        DataContext = new MainEditViewModel();
     }
 }

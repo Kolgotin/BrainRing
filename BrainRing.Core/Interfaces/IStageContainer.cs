@@ -1,6 +1,4 @@
-﻿using System.Windows.Input;
-
-namespace BrainRing.Core.Interfaces;
+﻿namespace BrainRing.Core.Interfaces;
 
 public interface IStageContainer : IGoNextCommandContainer
 {

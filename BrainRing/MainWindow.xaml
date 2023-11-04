@@ -9,7 +9,19 @@
         WindowState="Maximized"
         MinWidth="800"
         MinHeight="500"
-        Title="BrainRing">
-    <Grid x:Name="MainGrid">
+        Title="BrainRing"
+        d:DataContext="{d:DesignInstance local:MainWindowViewModel}">
+    <Grid>
+        <ContentControl Content="{Binding MainContent}">
+            <ContentControl.Resources>
+                <DataTemplate DataType="{x:Type ui:MainEditViewModel}">
+                    <ui:MainEditView DataContext="{Binding}"/>
+                </DataTemplate>
+
+                <DataTemplate DataType="{x:Type ui:MainViewModel}">
+                    <ui:MainView DataContext="{Binding}"/>
+                </DataTemplate>
+            </ContentControl.Resources>
+        </ContentControl>
     </Grid>
 </Window>

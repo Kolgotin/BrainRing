@@ -30,7 +30,8 @@ public sealed class GameViewModel : AbstractStageContainer, IDisposable
         ShowQuestionCommand = new AsyncRelayCommand<QuestionViewModel?>(ExecuteShowQuestion);
         AnswerCommand = new AsyncRelayCommand(ExecuteAnswer);
         SelectAnsweringCommand = new AsyncRelayCommand<PlayerViewModel?>(ExecuteSelectAnswering);
-
+        ReturnToQuestionCommand = new AsyncRelayCommand(ExecuteReturnToQuestion);
+        FinishRoundCommand = new AsyncRelayCommand(ExecuteFinishRound);
         NextRoundCommand.Execute(null);
     }
 
@@ -38,7 +39,9 @@ public sealed class GameViewModel : AbstractStageContainer, IDisposable
     public ICommand? ShowQuestionCommand { get; }
     public ICommand? AnswerCommand { get; }
     public ICommand? SelectAnsweringCommand { get; }
-    
+    public ICommand? ReturnToQuestionCommand { get; }
+    public ICommand? FinishRoundCommand { get; }
+
     public List<PlayerViewModel> Players { get; }
 
     public SelectAnsweringViewModel SelectAnsweringViewModel { get; }
@@ -99,34 +102,37 @@ public sealed class GameViewModel : AbstractStageContainer, IDisposable
 
     private Task ExecuteSelectAnswering(PlayerViewModel? player)
     {
-        if (CurrentQuestion is null)
-        {
-            CurrentContent = CurrentRound;
-            return Task.CompletedTask;
-        }
+        CurrentQuestion?.Answer(player);
+        CurrentQuestion = null;
 
-        if (player is null)
-            CurrentContent = CurrentQuestion;
+        if (CurrentRound.Topics
+            .Any(x => x.Questions.Any(y => !y.IsAnswered)))
+            CurrentContent = CurrentRound;
         else
-        {
-            player.Score += CurrentQuestion.Cost;
-            CurrentQuestion.IsAnswered = true;
-            CurrentQuestion = null;
-            if (CurrentRound.Topics
-                .Any(x => x.Questions.Any(y => !y.IsAnswered)))
-                CurrentContent = CurrentRound;
-            else
-            {
-                CurrentContent = new FinishRoundViewModel(Players);
-            }
-        }
+            CurrentContent = new FinishRoundViewModel(Players);
 
         return Task.CompletedTask;
+    }
+
+    private Task ExecuteReturnToQuestion()
+    {
+        if (CurrentQuestion is null)
+            CurrentContent = CurrentRound;
+        else
+            CurrentContent = CurrentQuestion;
+        return Task.CompletedTask;
+    }
+
+    private async Task ExecuteFinishRound()
+    {
+        var confirmed = await ShowDialogService.ShowYesNowMessage("Вы уверены что хотите завершить раунд досрочно?");
+
+        if (confirmed)
+            CurrentContent = new FinishRoundViewModel(Players);
     }
 
     public void Dispose()
     {
         _enumerator.Dispose();
     }
-
 }
