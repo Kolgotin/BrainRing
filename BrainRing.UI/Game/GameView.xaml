@@ -175,8 +175,15 @@
                             <Button Margin="11"
                                     Command="{Binding
                                             RelativeSource={RelativeSource AncestorType=UserControl},
+                                            Path=DataContext.ReturnToQuestionCommand}">
+                                <TextBlock Text="Вернуться"
+                                           Foreground="Red"/>
+                            </Button>
+                            <Button Margin="11"
+                                    Command="{Binding
+                                            RelativeSource={RelativeSource AncestorType=UserControl},
                                             Path=DataContext.SelectAnsweringCommand}">
-                                <TextBlock Text="Отмена"
+                                <TextBlock Text="Никто не ответил"
                                            Foreground="Red"/>
                             </Button>
                         </StackPanel>

@@ -1,5 +1,7 @@
-﻿using BrainRing.Core.Game;
+﻿using System.Threading.Tasks;
+using BrainRing.Core.Game;
 using DynamicData.Binding;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace BrainRing.UI.Common;
 
@@ -41,5 +43,14 @@ public class QuestionViewModel : AbstractNotifyPropertyChanged
             Question.Cost = value;
             OnPropertyChanged();
         }
+    }
+
+    public Task Answer(PlayerViewModel? player)
+    {
+        if (player is not null)
+            player.Score += Cost;
+
+        IsAnswered = true;
+        return Task.CompletedTask;
     }
 }

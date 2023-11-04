@@ -1,8 +1,7 @@
 {
   "profiles": {
     "BrainRing": {
-      "commandName": "Project",
-      "commandLineArgs": "edit"
+      "commandName": "Project"
     }
   }
 }
