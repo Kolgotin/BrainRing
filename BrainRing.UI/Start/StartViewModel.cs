@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using BrainRing.Core.Game;
 using BrainRing.Core.Interfaces;
@@ -42,28 +43,29 @@ public class StartViewModel : AbstractStageContainer
         return _stage.Next();
     }
 
-    private Task ExecuteLoadJson()
+    private async Task ExecuteLoadJson()
     {
-        var openFileDialog = new OpenFileDialog
+        try
         {
-            Filter = "json |*.json"
-        };
+            var fileName = await ShowDialogService.SelectJsonFilePath();
 
-        if (openFileDialog.ShowDialog() != true)
-            return Task.CompletedTask;
+            if (fileName is null)
+                return;
 
-        var pack = FileManager.ReadJsonFile(openFileDialog.FileName);
+            var pack = FileManager.ReadJsonFile(fileName);
 
-        if (pack is null)
-        {
-            //show message
+            if (pack is null || pack.Rounds.Count == 0)
+            {
+                await ShowDialogService.ShowInfo("Не удалось загрузить список вопросов");
+            }
+            else
+            {
+                Pack = pack;
+            }
         }
-        else
+        catch (Exception e)
         {
-            Pack = pack;
+            await ShowDialogService.ShowError(e.Message);
         }
-
-        return Task.CompletedTask;
     }
-    
 }

@@ -10,9 +10,20 @@
     <Grid>
         <StackPanel>
             <TextBlock Text="Режим редактирования"/>
-            <Button Content="Загрузить из excel файла"
-                    Visibility="Collapsed"
-                    Command="{Binding LoadExcelCommand}"/>
+            <TextBlock Text="{Binding FileName, StringFormat='{}Файл: {0}'}">
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}"
+                           BasedOn="{StaticResource {x:Type TextBlock}}">
+                        <Setter Property="Visibility" Value="Visible"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding FileName}"
+                                         Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
             <Button Content="Загрузить из json файла"
                     Command="{Binding LoadJsonCommand}"/>
             <Button Content="Редактировать"

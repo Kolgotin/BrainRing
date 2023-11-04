@@ -40,9 +40,4 @@ public static class FileManager
         var pack = JsonSerializer.Deserialize<Pack>(jsonString);
         return pack;
     }
-
-    public static Pack ReadExcelFile(string filePath)
-    {
-        throw new NotImplementedException();
-    }
 }

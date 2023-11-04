@@ -1,134 +1,60 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using BrainRing.Core.Game;
-using BrainRing.Core.Interfaces;
-using BrainRing.Core.Stages;
 using BrainRing.Managers;
 using BrainRing.UI.Common;
 using CommunityToolkit.Mvvm.Input;
-using DynamicData.Binding;
 using Microsoft.Win32;
 
 namespace BrainRing.UI.Edit;
 
+//todo: добавить загрузку вопросов из excel
 public class StartEditViewModel : AbstractGoNextCommandContainer
 {
-    //todo добавить загрузку базы из excel
-    //todo редактирование - лист где можно добавить раунд/тему/вопрос, провалиться внутрь
-    //todo редактирование вопроса с выбором типа: обычный, фото, (в дальнейшем аудио)
     private Pack? _pack;
     private readonly MainEditViewModel _host;
+    private string _fileName;
 
     public StartEditViewModel(MainEditViewModel host)
     {
         _host = host;
-        LoadExcelCommand = new AsyncRelayCommand(ExecuteLoadExcel);
         LoadJsonCommand = new AsyncRelayCommand(ExecuteLoadJson);
         GoNextCommand = new AsyncRelayCommand(ExecuteGoNext);
     }
 
-    public ICommand LoadExcelCommand { get; }
     public ICommand LoadJsonCommand { get; }
 
-    //todo эта хрень не работает
-    private Task ExecuteLoadExcel()
+    public string FileName
     {
-        var openFileDialog = new OpenFileDialog
-        {
-            Filter = "Excel files |*.xlsx;*.xls|All files (*.*)|*.*"
-        };
-        if (openFileDialog.ShowDialog() == true)
-            FileManager.ReadExcelFile(openFileDialog.FileName);
-
-        return Task.CompletedTask;
+        get => _fileName;
+        set => SetAndRaise(ref _fileName, value);
     }
 
-    private Task ExecuteLoadJson()
+    private async Task ExecuteLoadJson()
     {
-        var openFileDialog = new OpenFileDialog
+        try
         {
-            Filter = "json |*.json"
-        };
+            var fullFileName = await ShowDialogService.SelectJsonFilePath();
 
-        if (openFileDialog.ShowDialog() != true)
-            return Task.CompletedTask;
+            if (fullFileName is null)
+                return;
 
-        var pack = FileManager.ReadJsonFile(openFileDialog.FileName);
-        _pack = pack ?? new Pack();
-
-        return Task.CompletedTask;
+            var pack = FileManager.ReadJsonFile(fullFileName);
+            FileName = Path.GetFileName(fullFileName);
+            _pack = pack ?? new Pack();
+        }
+        catch (Exception e)
+        {
+            await ShowDialogService.ShowError(e.Message);
+        }
     }
 
     private Task ExecuteGoNext()
     {
-        _host.CurrentContent = new ProcessEditViewModel(_pack);
+        _host.CurrentContent = new ProcessEditViewModel(FileName, _pack);
         return Task.CompletedTask;
-    }
-
-    private Pack DummyPack()
-    {
-        var pack = new Pack()
-        {
-            Name = "new pack",
-            Rounds = new List<Round>()
-            {
-                new Round()
-                {
-                    Name = "round1",
-                    Topics = new List<Topic>()
-                    {
-                        new Topic()
-                        {
-                            Name = "theme11",
-                            Questions = new List<Question>()
-                            {
-                                new Question()
-                                {
-                                    Description = "Description111",
-                                    Cost = 1,
-                                },
-
-                                new Question()
-                                {
-                                    Description = "Description112",
-                                    Cost = 1,
-                                },
-                                new Question()
-                                {
-                                    Description = "Description113",
-                                    Cost = 1,
-                                }
-                            }
-                        },
-
-                        new Topic()
-                        {
-                            Name = "theme12",
-                            Questions = new List<Question>()
-                            {
-                                new Question()
-                                {
-                                    Description = "Description121",
-                                    Cost = 1,
-                                },
-
-                                new Question()
-                                {
-                                    Description = "Description122",
-                                    Cost = 1,
-                                },
-                                new Question()
-                                {
-                                    Description = "Description123",
-                                    Cost = 1,
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        };
-        return pack;
     }
 }

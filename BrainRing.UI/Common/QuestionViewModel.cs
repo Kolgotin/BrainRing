@@ -3,6 +3,7 @@ using DynamicData.Binding;
 
 namespace BrainRing.UI.Common;
 
+//todo: редактирование вопроса с выбором типа: обычный, фото, (в дальнейшем аудио)
 public class QuestionViewModel : AbstractNotifyPropertyChanged
 {
     private bool _isAnswered;

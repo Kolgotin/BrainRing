@@ -13,6 +13,6 @@ public class FinishStage : IStage
 
     public IStage Next()
     {
-        throw new NotImplementedException();
+        return new StartStage();
     }
 }

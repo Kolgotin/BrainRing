@@ -18,13 +18,16 @@
         <ContentControl Grid.Row="0"
                         Content="{Binding CurrentContent}">
             <ContentControl.Resources>
-
-
                 <DataTemplate DataType="{x:Type common:PackViewModel}">
                     <StackPanel>
-                        <TextBox HorizontalAlignment="Stretch"
-                                 TextWrapping="NoWrap"
-                                 Text="{Binding Name}"/>
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Left"
+                                       Text="Игра: "/>
+
+                            <TextBox HorizontalAlignment="Stretch"
+                                     TextWrapping="NoWrap"
+                                     Text="{Binding Name}"/>
+                        </DockPanel>
 
                         <DataGrid ItemsSource="{Binding Rounds}"
                                   CanUserDeleteRows="True"
@@ -69,9 +72,14 @@
                                 Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl},
                             Path=DataContext.GoToPackCommand}"/>
 
-                        <TextBox HorizontalAlignment="Stretch"
-                                 TextWrapping="NoWrap"
-                                 Text="{Binding Name}"/>
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Left"
+                                       Text="Раунд: "/>
+
+                            <TextBox HorizontalAlignment="Stretch"
+                                     TextWrapping="NoWrap"
+                                     Text="{Binding Name}"/>
+                        </DockPanel>
 
                         <DataGrid ItemsSource="{Binding Topics}">
                             <DataGrid.Columns>
@@ -112,14 +120,19 @@
                                 Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl},
                             Path=DataContext.GoToRoundCommand}"/>
 
-                        <TextBox HorizontalAlignment="Stretch"
-                                 TextWrapping="NoWrap"
-                                 Text="{Binding Name}"/>
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Left"
+                                       Text="Тема: "/>
+
+                            <TextBox HorizontalAlignment="Stretch"
+                                     TextWrapping="NoWrap"
+                                     Text="{Binding Name}"/>
+                        </DockPanel>
 
                         <DataGrid ItemsSource="{Binding Questions}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Вопрос"
-                                                    Width="*"
+                                                    Width="2*"
                                                     Binding="{Binding Description}"/>
                                 <DataGridTextColumn Header="Стоимость"
                                                     Width="*"
@@ -158,9 +171,14 @@
                                 Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl},
                             Path=DataContext.GoToTopicCommand}"/>
 
+                        <TextBlock Text="Вопрос: "/>
+
+                        <!--todo: не происходит перенос строки при нажатии Enter - исправить-->
                         <TextBox HorizontalAlignment="Stretch"
-                                 TextWrapping="WrapWithOverflow"
+                                 TextWrapping="Wrap"
                                  Text="{Binding Description}"/>
+
+                        <TextBlock Text="Стоимость: "/>
 
                         <TextBox HorizontalAlignment="Stretch"
                                  TextWrapping="NoWrap"

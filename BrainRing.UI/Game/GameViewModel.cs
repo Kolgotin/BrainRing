@@ -30,7 +30,7 @@ public sealed class GameViewModel : AbstractStageContainer, IDisposable
         ShowQuestionCommand = new AsyncRelayCommand<QuestionViewModel?>(ExecuteShowQuestion);
         AnswerCommand = new AsyncRelayCommand(ExecuteAnswer);
         SelectAnsweringCommand = new AsyncRelayCommand<PlayerViewModel?>(ExecuteSelectAnswering);
-
+        FinishRoundCommand = new AsyncRelayCommand(ExecuteFinishRound);
         NextRoundCommand.Execute(null);
     }
 
@@ -38,7 +38,8 @@ public sealed class GameViewModel : AbstractStageContainer, IDisposable
     public ICommand? ShowQuestionCommand { get; }
     public ICommand? AnswerCommand { get; }
     public ICommand? SelectAnsweringCommand { get; }
-    
+    public ICommand? FinishRoundCommand { get; }
+
     public List<PlayerViewModel> Players { get; }
 
     public SelectAnsweringViewModel SelectAnsweringViewModel { get; }
@@ -124,9 +125,16 @@ public sealed class GameViewModel : AbstractStageContainer, IDisposable
         return Task.CompletedTask;
     }
 
+    private async Task ExecuteFinishRound()
+    {
+        var confirmed = await ShowDialogService.ShowYesNowMessage("Вы уверены что хотите завершить раунд досрочно?");
+
+        if (confirmed)
+            CurrentContent = new FinishRoundViewModel(Players);
+    }
+
     public void Dispose()
     {
         _enumerator.Dispose();
     }
-
 }
