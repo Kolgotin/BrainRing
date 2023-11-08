@@ -39,7 +39,7 @@ public class TopicViewModel : AbstractNotifyPropertyChanged
         new()
         {
             Name = Name,
-            Questions = Questions.Select(x => x.Question).ToList()
+            Questions = Questions.Select(x => x.GetQuestion()).ToList()
         };
 
     private Task ExecuteAddQuestion()

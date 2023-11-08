@@ -7,7 +7,6 @@ using BrainRing.Core.Stages;
 using BrainRing.Managers;
 using BrainRing.UI.Common;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Win32;
 
 namespace BrainRing.UI.Start;
 

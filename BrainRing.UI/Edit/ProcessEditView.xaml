@@ -6,6 +6,8 @@
              xmlns:local="clr-namespace:BrainRing.UI.Edit"
              xmlns:game="clr-namespace:BrainRing.UI.Game"
              xmlns:common="clr-namespace:BrainRing.UI.Common"
+             xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+             xmlns:gmCore="clr-namespace:BrainRing.Core.Game;assembly=BrainRing.Core"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance local:ProcessEditViewModel}">
@@ -115,12 +117,20 @@
                 </DataTemplate>
 
                 <DataTemplate DataType="{x:Type common:TopicViewModel}">
-                    <StackPanel>
-                        <Button Content="Наверх"
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Button Grid.Row="0"
+                                Content="Наверх"
                                 Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl},
                             Path=DataContext.GoToRoundCommand}"/>
 
-                        <DockPanel>
+                        <DockPanel Grid.Row="1">
                             <TextBlock DockPanel.Dock="Left"
                                        Text="Тема: "/>
 
@@ -129,15 +139,44 @@
                                      Text="{Binding Name}"/>
                         </DockPanel>
 
-                        <DataGrid ItemsSource="{Binding Questions}">
+                        <DataGrid Grid.Row="2"
+                                  ItemsSource="{Binding Questions}">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Вопрос"
-                                                    Width="2*"
-                                                    Binding="{Binding Description}"/>
+                                <DataGridTemplateColumn Header="Вопрос"
+                                                        Width="4*">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Description}"
+                                                     TextWrapping="NoWrap"
+                                                     MaxLines="1"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
                                 <DataGridTextColumn Header="Стоимость"
-                                                    Width="*"
+                                                    Width="2*"
                                                     Binding="{Binding Cost}"/>
-                                <DataGridTemplateColumn Width="*">
+                                <DataGridTemplateColumn Header="Тип"
+                                                        Width="*">
+                                    <!--todo: попробовать вынести это в отдельный стиль-->
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock>
+                                                <TextBlock.Style>
+                                                    <Style TargetType="{x:Type TextBlock}">
+                                                        <Setter Property="Text" Value="txt"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding SelectedQuestionType}"
+                                                                         Value="{x:Static gmCore:QuestionTypes.ImageQuestion}">
+                                                                <Setter Property="Text" Value="img"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Width="2*">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Content="Править"
@@ -147,7 +186,7 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Width="*">
+                                <DataGridTemplateColumn Width="2*">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Content="Удалить"
@@ -160,30 +199,14 @@
                             </DataGrid.Columns>
                         </DataGrid>
 
-                        <Button Content="Добавить"
+                        <Button Grid.Row="3"
+                                Content="Добавить"
                                 Command="{Binding Path=AddQuestionCommand}"/>
-                    </StackPanel>
+                    </Grid>
                 </DataTemplate>
 
                 <DataTemplate DataType="{x:Type common:QuestionViewModel}">
-                    <StackPanel>
-                        <Button Content="Наверх"
-                                Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl},
-                            Path=DataContext.GoToTopicCommand}"/>
-
-                        <TextBlock Text="Вопрос: "/>
-
-                        <!--todo: не происходит перенос строки при нажатии Enter - исправить-->
-                        <TextBox HorizontalAlignment="Stretch"
-                                 TextWrapping="Wrap"
-                                 Text="{Binding Description}"/>
-
-                        <TextBlock Text="Стоимость: "/>
-
-                        <TextBox HorizontalAlignment="Stretch"
-                                 TextWrapping="NoWrap"
-                                 Text="{Binding Cost}"/>
-                    </StackPanel>
+                    <local:QuestionEditView DataContext="{Binding}"/>
                 </DataTemplate>
 
             </ContentControl.Resources>

@@ -1,21 +1,50 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.IO;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using BrainRing.Core.Game;
+using CommunityToolkit.Mvvm.Input;
 using DynamicData.Binding;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace BrainRing.UI.Common;
 
-//todo: редактирование вопроса с выбором типа: обычный, фото, (в дальнейшем аудио)
 public class QuestionViewModel : AbstractNotifyPropertyChanged
 {
     private bool _isAnswered;
-    
-    public QuestionViewModel(Question? question = null)
+    private QuestionTypes _selectedQuestionType;
+    private int _cost;
+    private string _description;
+    private BitmapImage _bitmapImage;
+
+    public QuestionViewModel(QuestionBase? question = null)
     {
-        Question = question ?? new Question();
+        if(question is null)
+        {
+            _description = "";
+            _cost = 1;
+        }
+        else
+        {
+            _description = question.Description;
+            _cost = question.Cost;
+        }
+
+        if (question is ImageQuestion imageQuestion)
+        {
+            _selectedQuestionType = QuestionTypes.ImageQuestion;
+            _bitmapImage = GetImageFromString(imageQuestion.ImageBase64);
+        }
+        else
+        {
+            _selectedQuestionType = QuestionTypes.TextQuestion;
+            _bitmapImage = new BitmapImage();
+        }
+
+        LoadImageCommand = new AsyncRelayCommand(ExecuteLoadImage);
     }
 
-    public Question Question { get; }
+    public ICommand LoadImageCommand { get; }
 
     public bool IsAnswered
     {
@@ -25,24 +54,44 @@ public class QuestionViewModel : AbstractNotifyPropertyChanged
 
     public string Description
     {
-        get => Question.Description;
-        set
-        {
-            if (value == Question.Description) return;
-            Question.Description = value;
-            OnPropertyChanged();
-        }
+        get => _description;
+        set => SetAndRaise(ref _description, value);
     }
 
     public int Cost
     {
-        get => Question.Cost;
-        set
+        get => _cost;
+        set => SetAndRaise(ref _cost, value);
+    }
+    
+    public BitmapImage BitmapImage
+    {
+        get => _bitmapImage;
+        set => SetAndRaise(ref _bitmapImage, value);
+    }
+
+    public QuestionTypes SelectedQuestionType
+    {
+        get => _selectedQuestionType;
+        set => SetAndRaise(ref _selectedQuestionType, value);
+    }
+
+    public QuestionBase GetQuestion()
+    {
+        return SelectedQuestionType switch
         {
-            if (value == Question.Cost) return;
-            Question.Cost = value;
-            OnPropertyChanged();
-        }
+            QuestionTypes.ImageQuestion => new ImageQuestion
+            {
+                Description = Description,
+                Cost = Cost,
+                ImageBase64 = GetStringFromImage(BitmapImage),
+            },
+            _ => new TextQuestion
+            {
+                Description = Description,
+                Cost = Cost
+            }
+        };
     }
 
     public Task Answer(PlayerViewModel? player)
@@ -52,5 +101,54 @@ public class QuestionViewModel : AbstractNotifyPropertyChanged
 
         IsAnswered = true;
         return Task.CompletedTask;
+    }
+
+    private static BitmapImage GetImageFromString(string str)
+    {
+        try
+        {
+            var binaryData = Convert.FromBase64String(str);
+            var bitmapImage = new BitmapImage();
+            bitmapImage.BeginInit();
+            bitmapImage.StreamSource = new MemoryStream(binaryData);
+            bitmapImage.EndInit();
+            return bitmapImage;
+        }
+        catch (Exception)
+        {
+            return new BitmapImage();
+        }
+    }
+
+    private static string GetStringFromImage(BitmapImage? image)
+    {
+        try
+        {
+            if (image is null)
+                return "";
+
+            var encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(image));
+            using var stream = new MemoryStream();
+            encoder.Save(stream);
+            var bytes = stream.ToArray();
+            return Convert.ToBase64String(bytes);
+        }
+        catch (Exception e)
+        {
+            //todo: добавить уведомление что какая-то картинка не сохранилась
+            return "";
+        }
+    }
+
+    private async Task ExecuteLoadImage()
+    {
+        var path = await ShowDialogService.SelectImageFilePath();
+        if (path is null)
+            return;
+
+        var uri = new Uri(path);
+        var image = new BitmapImage(uri);
+        BitmapImage = image;
     }
 }
