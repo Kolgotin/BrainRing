@@ -67,7 +67,7 @@
                                     <ResourceDictionary>
                                         <Style TargetType="{x:Type DataGridCell}"
                                                BasedOn="{StaticResource {x:Type DataGridCell}}">
-                                            <Setter Property="FontSize" Value="{StaticResource BigFontSize}"/>
+                                            <Setter Property="FontSize" Value="{StaticResource NormalFontSize}"/>
                                         </Style>
                                     </ResourceDictionary>
                                 </DataGrid.Resources>
@@ -136,20 +136,27 @@
                         </Grid>
                     </DataTemplate>
 
+                    <!--todo: сделать 2 разных типа: с картинкой и без; внести это в отдельный файл-->
                     <DataTemplate DataType="{x:Type common:QuestionViewModel}">
                         <Grid VerticalAlignment="Stretch">
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
                             <TextBlock Grid.Row="0"
-                                       Text="{Binding Description}"
-                                       TextWrapping="WrapWithOverflow"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"/>
+                                       Style="{StaticResource QuestionTextBlockStyle}"
+                                       Text="{Binding Description}"/>
 
-                            <Button Grid.Row="1"
+                            <!--todo: сделать развертывание картинки по нажатию-->
+                            <Image Grid.Row="1"
+                                   MaxHeight="500"
+                                   Source="{Binding BitmapImage}"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+
+                            <Button Grid.Row="2"
                                     Content="Ответ"
                                     Command="{Binding
                                             RelativeSource={RelativeSource AncestorType=UserControl},

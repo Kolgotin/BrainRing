@@ -28,26 +28,18 @@ public class ShowDialogService
         _ = MessageBox.Show(message, caption, MessageBoxButton.OK, MessageBoxImage.Error);
         return Task.CompletedTask;
     }
-    
-    public static async Task<string?> SelectJsonFilePath()
-    {
-        try
-        {
-            var openFileDialog = new OpenFileDialog
-            {
-                Filter = "json |*.json"
-            };
 
-            var result = openFileDialog.ShowDialog() != true ? null : openFileDialog.FileName;
-            return result;
-        }
-        catch (Exception e)
-        {
-            await ShowError(e.Message);
-            return default;
-        }
+    public static async Task<string?> SelectImageFilePath()
+    {
+        return await SelectFilePath("png |*.png| jpg |*.jpg");
     }
 
+    public static async Task<string?> SelectJsonFilePath()
+    {
+        return await SelectFilePath("json |*.json");
+    }
+
+    //todo: нарушает SRP - надо разнести выбор файла и сохранение
     public static Task<bool> SavePack(Pack pack, string? filename)
     {
         try
@@ -67,5 +59,24 @@ public class ShowDialogService
         }
 
         return Task.FromResult(true);
+    }
+
+    private static async Task<string?> SelectFilePath(string filter)
+    {
+        try
+        {
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = filter
+            };
+
+            var result = openFileDialog.ShowDialog() != true ? null : openFileDialog.FileName;
+            return result;
+        }
+        catch (Exception e)
+        {
+            await ShowError(e.Message);
+            return default;
+        }
     }
 }

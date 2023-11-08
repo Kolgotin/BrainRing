@@ -1,0 +1,71 @@
+﻿<UserControl x:Class="BrainRing.UI.Edit.QuestionEditView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:BrainRing.UI.Edit"
+             xmlns:gmCore="clr-namespace:BrainRing.Core.Game;assembly=BrainRing.Core"
+             xmlns:common="clr-namespace:BrainRing.UI.Common"
+             xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance common:QuestionViewModel}">
+    <Grid>
+        <Grid.Resources>
+            <ResourceDictionary>
+                <ObjectDataProvider MethodName="GetValues"
+                                    ObjectType="{x:Type sys:Enum}"
+                                    x:Key="QuestionTypeValues">
+                    <ObjectDataProvider.MethodParameters>
+                        <x:Type TypeName="gmCore:QuestionTypes" />
+                    </ObjectDataProvider.MethodParameters>
+                </ObjectDataProvider>
+            </ResourceDictionary>
+        </Grid.Resources>
+
+        <ScrollViewer>
+            <StackPanel>
+                <ComboBox ItemsSource="{Binding Source={StaticResource QuestionTypeValues}}"
+                          SelectedItem="{Binding SelectedQuestionType, Mode=TwoWay}"/>
+
+                <Button Content="Наверх"
+                        Command="{Binding RelativeSource={RelativeSource AncestorType=local:ProcessEditView},
+                               Path=DataContext.GoToTopicCommand}"/>
+
+                <TextBlock Text="Вопрос: "/>
+
+                <TextBox HorizontalAlignment="Stretch"
+                         TextWrapping="Wrap"
+                         AcceptsReturn="True"
+                         Text="{Binding Description}"/>
+
+                <TextBlock Text="Стоимость: "/>
+
+                <TextBox HorizontalAlignment="Stretch"
+                         TextWrapping="NoWrap"
+                         Text="{Binding Cost}"/>
+
+                <StackPanel>
+                    <StackPanel.Style>
+                        <Style TargetType="{x:Type StackPanel}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedQuestionType}"
+                                                         Value="{x:Static gmCore:QuestionTypes.ImageQuestion}">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+
+                    <Button Content="Загрузить картинку"
+                            Command="{Binding LoadImageCommand}"/>
+
+                    <Image Source="{Binding BitmapImage}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
