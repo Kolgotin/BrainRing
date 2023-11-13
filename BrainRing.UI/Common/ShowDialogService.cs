@@ -7,6 +7,7 @@ using Microsoft.Win32;
 
 namespace BrainRing.UI.Common;
 
+//todo: вынести этот класс в другую папку и посмотреть что в BrainRing.UI.Common ещё пораскидать
 public class ShowDialogService
 {
     private const string DefaultFileName = "default";

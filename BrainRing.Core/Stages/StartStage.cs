@@ -10,7 +10,7 @@ public class StartStage : IStage
     public IStage Next()
     {
         if (Pack is null)
-            throw new ArgumentException("Не выбрана игра!");
+            throw new ArgumentException("Отсутствует список вопросов!");
 
         return new SetPlayersStage(Pack);
     }
