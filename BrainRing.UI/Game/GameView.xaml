@@ -11,10 +11,6 @@
     <Grid>
         <Grid.Resources>
             <ResourceDictionary>
-                <Style TargetType="{x:Type DataGrid}"
-                       BasedOn="{StaticResource {x:Type DataGrid}}">
-                    <Setter Property="IsReadOnly" Value="True"/>
-                </Style>
                 <Style TargetType="{x:Type DataGridCell}"
                        BasedOn="{StaticResource {x:Type DataGridCell}}">
                     <Setter Property="Background" Value="AliceBlue" />
@@ -53,115 +49,11 @@
             <ContentControl.Resources>
                 <ResourceDictionary>
                     <DataTemplate DataType="{x:Type common:RoundViewModel}">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-
-                            <DataGrid ItemsSource="{Binding Topics}"
-                                      VerticalAlignment="Center"
-                                      HorizontalAlignment="Stretch"
-                                      HeadersVisibility="None">
-                                <DataGrid.Resources>
-                                    <ResourceDictionary>
-                                        <Style TargetType="{x:Type DataGridCell}"
-                                               BasedOn="{StaticResource {x:Type DataGridCell}}">
-                                            <Setter Property="FontSize" Value="{StaticResource NormalFontSize}"/>
-                                        </Style>
-                                    </ResourceDictionary>
-                                </DataGrid.Resources>
-                                <DataGrid.Columns>
-                                    <DataGridTemplateColumn>
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <Grid>
-                                                    <TextBlock Text="{Binding Name}"
-                                                               VerticalAlignment="Center"/>
-                                                </Grid>
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                    <DataGridTemplateColumn Width="*">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <ListBox ItemsSource="{Binding Questions}"
-                                                         HorizontalAlignment="Center"
-                                                         HorizontalContentAlignment="Center"
-                                                         Background="AliceBlue"
-                                                         BorderThickness="0">
-                                                    <ListBox.Resources>
-                                                        <ResourceDictionary>
-                                                            <Style TargetType="{x:Type ListBoxItem}">
-                                                                <Setter Property="Padding" Value="5"/>
-                                                                <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding IsAnswered}"
-                                                                                 Value="True">
-                                                                        <Setter Property="IsEnabled" Value="False"/>
-                                                                    </DataTrigger>
-                                                                </Style.Triggers>
-                                                            </Style>
-                                                        </ResourceDictionary>
-                                                    </ListBox.Resources>
-                                                    <ListBox.ItemsPanel>
-                                                        <ItemsPanelTemplate>
-                                                            <StackPanel Orientation="Horizontal"
-                                                            HorizontalAlignment="Stretch"/>
-                                                        </ItemsPanelTemplate>
-                                                    </ListBox.ItemsPanel>
-                                                    <ListBox.ItemTemplate>
-                                                        <DataTemplate>
-                                                            <Button Margin="0"
-                                                                    Padding="5"
-                                                                    Width="150"
-                                                                    Content="{Binding Cost}"
-                                                                    Command="{Binding
-                                                                RelativeSource={RelativeSource AncestorType=UserControl}, 
-                                                                Path=DataContext.ShowQuestionCommand}"
-                                                                    CommandParameter="{Binding}"/>
-                                                        </DataTemplate>
-                                                    </ListBox.ItemTemplate>
-                                                </ListBox>
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                </DataGrid.Columns>
-                            </DataGrid>
-
-                            <Button Grid.Row="1"
-                                    HorizontalAlignment="Right"
-                                    Content="Завершить раунд"
-                                    Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl},
-                                Path=DataContext.FinishRoundCommand}"/>
-                        </Grid>
+                        <local:RoundView DataContext="{Binding}"/>
                     </DataTemplate>
 
-                    <!--todo: сделать 2 разных типа: с картинкой и без; внести это в отдельный файл-->
                     <DataTemplate DataType="{x:Type common:QuestionViewModel}">
-                        <Grid VerticalAlignment="Stretch">
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-
-                            <TextBlock Grid.Row="0"
-                                       Style="{StaticResource QuestionTextBlockStyle}"
-                                       Text="{Binding Description}"/>
-
-                            <!--todo: сделать развертывание картинки по нажатию-->
-                            <Image Grid.Row="1"
-                                   MaxHeight="500"
-                                   Source="{Binding BitmapImage}"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"/>
-
-                            <Button Grid.Row="2"
-                                    Content="Ответ"
-                                    Command="{Binding
-                                            RelativeSource={RelativeSource AncestorType=UserControl},
-                                            Path=DataContext.AnswerCommand}"/>
-                        </Grid>
+                        <local:QuestionView DataContext="{Binding}"/>
                     </DataTemplate>
 
                     <DataTemplate DataType="{x:Type local:SelectAnsweringViewModel}">
@@ -215,16 +107,25 @@
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Игрок"
                                                         Width="*"
-                                                        Binding="{Binding Name}">
+                                                        Binding="{Binding Name, Mode=OneWay}">
                                         <DataGridTextColumn.ElementStyle>
                                             <Style TargetType="{x:Type TextBlock}">
                                                 <Setter Property="HorizontalAlignment" Value="Center"/>
                                             </Style>
                                         </DataGridTextColumn.ElementStyle>
                                     </DataGridTextColumn>
-                                    <DataGridTextColumn Header="Счёт"
+                                    <DataGridTextColumn Header="Счёт в раунде"
                                                         Width="*"
-                                                        Binding="{Binding Score}">
+                                                        Binding="{Binding RoundScore}">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="{x:Type TextBlock}">
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="Общчий счёт"
+                                                        Width="*"
+                                                        Binding="{Binding Score, Mode=OneWay}">
                                         <DataGridTextColumn.ElementStyle>
                                             <Style TargetType="{x:Type TextBlock}">
                                                 <Setter Property="HorizontalAlignment" Value="Center"/>
@@ -247,6 +148,7 @@
         <DataGrid Grid.Row="0"
                   Grid.Column="2"
                   Grid.RowSpan="2"
+                  IsReadOnly="True"
                   ItemsSource="{Binding Players}"
                   HeadersVisibility="Column"
                   VerticalAlignment="Top">

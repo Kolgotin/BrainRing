@@ -8,7 +8,7 @@ namespace BrainRing.UI.Finish;
 
 public class FinishViewModel : AbstractStageContainer
 {
-    private FinishStage _finishStage;
+    private readonly FinishStage _finishStage;
 
     public FinishViewModel(FinishStage finishStage)
     {

@@ -97,7 +97,7 @@ public class QuestionViewModel : AbstractNotifyPropertyChanged
     public Task Answer(PlayerViewModel? player)
     {
         if (player is not null)
-            player.Score += Cost;
+            player.RoundScore += Cost;
 
         IsAnswered = true;
         return Task.CompletedTask;

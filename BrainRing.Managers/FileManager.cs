@@ -33,7 +33,7 @@ public static class FileManager
         return true;
     }
 
-    public static Pack? ReadJsonFile(string filePath)
+    public static Pack? ReadPackFile(string filePath)
     {
         using var sr = new StreamReader(filePath);
         var jsonString = sr.ReadToEnd();

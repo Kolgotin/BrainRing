@@ -25,12 +25,12 @@
 
         <ScrollViewer>
             <StackPanel>
-                <ComboBox ItemsSource="{Binding Source={StaticResource QuestionTypeValues}}"
-                          SelectedItem="{Binding SelectedQuestionType, Mode=TwoWay}"/>
-
                 <Button Content="Наверх"
                         Command="{Binding RelativeSource={RelativeSource AncestorType=local:ProcessEditView},
                                Path=DataContext.GoToTopicCommand}"/>
+
+                <ComboBox ItemsSource="{Binding Source={StaticResource QuestionTypeValues}}"
+                          SelectedItem="{Binding SelectedQuestionType}"/>
 
                 <TextBlock Text="Вопрос: "/>
 

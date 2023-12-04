@@ -9,11 +9,13 @@ namespace BrainRing.UI.Common;
 
 public class ShowDialogService
 {
+    private const string DefaultFileName = "default";
+    private const string PackExtension = "brng |*.brng";
+    private const string ImageExtension = "png |*.png| jpg |*.jpg";
+
     public static Task<bool> ShowYesNowMessage(string message, string caption = "Подтверждение")
     {
-        MessageBoxButton button = MessageBoxButton.YesNo;
-        MessageBoxImage icon = MessageBoxImage.Question;
-        var result = MessageBox.Show(message, caption, button, icon);
+        var result = MessageBox.Show(message, caption, MessageBoxButton.YesNo, MessageBoxImage.Question);
         return Task.FromResult(result == MessageBoxResult.Yes);
     }
 
@@ -30,14 +32,10 @@ public class ShowDialogService
     }
 
     public static async Task<string?> SelectImageFilePath()
-    {
-        return await SelectFilePath("png |*.png| jpg |*.jpg");
-    }
+        => await SelectFilePath(ImageExtension);
 
-    public static async Task<string?> SelectJsonFilePath()
-    {
-        return await SelectFilePath("json |*.json");
-    }
+    public static async Task<string?> SelectPackFilePath()
+        => await SelectFilePath(PackExtension);
 
     //todo: нарушает SRP - надо разнести выбор файла и сохранение
     public static Task<bool> SavePack(Pack pack, string? filename)
@@ -46,8 +44,8 @@ public class ShowDialogService
         {
             var saveFileDialog = new SaveFileDialog
             {
-                Filter = "json |*.json",
-                FileName = filename ?? "default"
+                Filter = PackExtension,
+                FileName = filename ?? DefaultFileName
             };
             if (saveFileDialog.ShowDialog() == true)
                 FileManager.WriteFileManager(pack, saveFileDialog.FileName);

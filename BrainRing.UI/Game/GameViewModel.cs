@@ -11,12 +11,14 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace BrainRing.UI.Game;
 
+//todo: проверить что диспозится всё что нужно
+//todo: удалить асинхронщину везде где она не нужна
 public sealed class GameViewModel : AbstractStageContainer, IDisposable
 {
     private readonly GameStage _stage;
-    private RoundViewModel _currentRound; 
+    private RoundViewModel? _currentRound; 
     private QuestionViewModel? _currentQuestion;
-    private List<Round>.Enumerator _enumerator;
+    private List<RoundBase>.Enumerator _enumerator;
     private object _currentContent;
 
     public GameViewModel(GameStage stage)
@@ -31,16 +33,18 @@ public sealed class GameViewModel : AbstractStageContainer, IDisposable
         AnswerCommand = new AsyncRelayCommand(ExecuteAnswer);
         SelectAnsweringCommand = new AsyncRelayCommand<PlayerViewModel?>(ExecuteSelectAnswering);
         ReturnToQuestionCommand = new AsyncRelayCommand(ExecuteReturnToQuestion);
+        NextBlitzQuestionCommand = new AsyncRelayCommand(ExecuteNextBlitzQuestion);
         FinishRoundCommand = new AsyncRelayCommand(ExecuteFinishRound);
         NextRoundCommand.Execute(null);
     }
 
     public ICommand NextRoundCommand { get; }
-    public ICommand? ShowQuestionCommand { get; }
-    public ICommand? AnswerCommand { get; }
-    public ICommand? SelectAnsweringCommand { get; }
-    public ICommand? ReturnToQuestionCommand { get; }
-    public ICommand? FinishRoundCommand { get; }
+    public ICommand ShowQuestionCommand { get; }
+    public ICommand AnswerCommand { get; }
+    public ICommand SelectAnsweringCommand { get; }
+    public ICommand ReturnToQuestionCommand { get; }
+    public ICommand NextBlitzQuestionCommand { get; }
+    public ICommand FinishRoundCommand { get; }
 
     public List<PlayerViewModel> Players { get; }
 
@@ -52,7 +56,7 @@ public sealed class GameViewModel : AbstractStageContainer, IDisposable
         set => SetAndRaise(ref _currentContent, value);
     }
 
-    public RoundViewModel CurrentRound
+    public RoundViewModel? CurrentRound
     {
         get => _currentRound;
         set => SetAndRaise(ref _currentRound, value);
@@ -69,10 +73,18 @@ public sealed class GameViewModel : AbstractStageContainer, IDisposable
         return _stage.Next();
     }
 
-    private Task ExecuteNextRound()
+    private async Task ExecuteNextRound()
     {
+        if (CurrentRound is not null &&
+            !await ShowDialogService.ShowYesNowMessage("Вы уверены что хотите завершить раунд?"))
+            return;
+
+        Players.ForEach(x => x.SaveScore());
+
         if (_enumerator.MoveNext())
         {
+            CurrentRound?.Dispose(); //todo: а тут не упадёт?
+            CurrentQuestion = null;
             CurrentRound = new RoundViewModel(_enumerator.Current);
             CurrentContent = CurrentRound;
         }
@@ -80,8 +92,6 @@ public sealed class GameViewModel : AbstractStageContainer, IDisposable
         {
             GoNextCommand?.Execute(null);
         }
-
-        return Task.CompletedTask;
     }
 
     private Task ExecuteShowQuestion(QuestionViewModel? question)
@@ -105,6 +115,12 @@ public sealed class GameViewModel : AbstractStageContainer, IDisposable
         CurrentQuestion?.Answer(player);
         CurrentQuestion = null;
 
+        if (CurrentRound is null)
+        {
+            CurrentContent = new FinishRoundViewModel(Players);
+            return Task.CompletedTask;
+        }
+
         if (CurrentRound.Topics
             .Any(x => x.Questions.Any(y => !y.IsAnswered)))
             CurrentContent = CurrentRound;
@@ -117,15 +133,36 @@ public sealed class GameViewModel : AbstractStageContainer, IDisposable
     private Task ExecuteReturnToQuestion()
     {
         if (CurrentQuestion is null)
-            CurrentContent = CurrentRound;
+            if (CurrentRound is null)
+                CurrentContent = new FinishRoundViewModel(Players);
+            else
+                CurrentContent = CurrentRound;
         else
             CurrentContent = CurrentQuestion;
         return Task.CompletedTask;
     }
 
+    //todo: протестить вариант если в блитц раунде нет вопросов
+    private Task ExecuteNextBlitzQuestion()
+    {
+        if (CurrentRound is null)
+        {
+            CurrentContent = new FinishRoundViewModel(Players);
+            return Task.CompletedTask;
+        }
+
+        CurrentRound.NextBlitzQuestionCommand.Execute(null);
+
+        if (CurrentRound.CurrentQuestion is null)
+            CurrentContent = new FinishRoundViewModel(Players);
+
+        return Task.CompletedTask;
+    }
+
     private async Task ExecuteFinishRound()
     {
-        var confirmed = await ShowDialogService.ShowYesNowMessage("Вы уверены что хотите завершить раунд досрочно?");
+        var confirmed =
+            await ShowDialogService.ShowYesNowMessage("Вы уверены что хотите завершить раунд досрочно?");
 
         if (confirmed)
             CurrentContent = new FinishRoundViewModel(Players);

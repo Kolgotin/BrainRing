@@ -1,11 +1,10 @@
-﻿using BrainRing.Core.Game;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
-using System.Collections.Generic;
-using DynamicData.Binding;
-using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using BrainRing.Core.Game;
 using CommunityToolkit.Mvvm.Input;
+using DynamicData.Binding;
 
 namespace BrainRing.UI.Common;
 

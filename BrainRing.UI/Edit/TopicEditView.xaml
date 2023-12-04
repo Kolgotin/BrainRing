@@ -1,0 +1,98 @@
+﻿<UserControl x:Class="BrainRing.UI.Edit.TopicEditView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:BrainRing.UI.Edit"
+             xmlns:gmCore="clr-namespace:BrainRing.Core.Game;assembly=BrainRing.Core"
+             xmlns:common="clr-namespace:BrainRing.UI.Common"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance common:TopicViewModel}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Button Grid.Row="0"
+                Content="Наверх"
+                Command="{Binding RelativeSource={RelativeSource AncestorType=local:ProcessEditView},
+                        Path=DataContext.GoToRoundCommand}"/>
+
+        <DockPanel Grid.Row="1">
+            <TextBlock DockPanel.Dock="Left"
+                       Text="Тема: "/>
+
+            <TextBox HorizontalAlignment="Stretch"
+                     TextWrapping="NoWrap"
+                     Text="{Binding Name}"/>
+        </DockPanel>
+
+        <DataGrid Grid.Row="2"
+                  ItemsSource="{Binding Questions}">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Вопрос"
+                                        Width="4*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Text="{Binding Description, UpdateSourceTrigger=LostFocus}"
+                                     TextWrapping="NoWrap"
+                                     MaxLines="1"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Стоимость"
+                                    Width="2*"
+                                    Binding="{Binding Cost, UpdateSourceTrigger=LostFocus}"/>
+                <DataGridTemplateColumn Header="Тип"
+                                        Width="*">
+                    <!--todo: попробовать вынести это в отдельный стиль-->
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock>
+                                <TextBlock.Style>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="Text" Value="txt"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedQuestionType}"
+                                                         Value="{x:Static gmCore:QuestionTypes.ImageQuestion}">
+                                                <Setter Property="Text" Value="img"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="2*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Править"
+                                    Command="{Binding RelativeSource={RelativeSource AncestorType=local:ProcessEditView},
+                                            Path=DataContext.GoToQuestionCommand}"
+                                    CommandParameter="{Binding}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="2*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Удалить"
+                                    Command="{Binding RelativeSource={RelativeSource AncestorType=DataGrid},
+                                            Path=DataContext.RemoveQuestionCommand}"
+                                    CommandParameter="{Binding}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <Button Grid.Row="3"
+                Content="Добавить"
+                Command="{Binding Path=AddQuestionCommand}"/>
+    </Grid>
+</UserControl>

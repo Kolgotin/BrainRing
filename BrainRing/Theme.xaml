@@ -52,6 +52,14 @@
         <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
 
+    <Style x:Key="InfoTextBlockStyle"
+           TargetType="{x:Type TextBlock}"
+           BasedOn="{StaticResource TextBlockStyleBase}">
+        <Setter Property="FontSize" Value="{StaticResource NormalFontSize}"/>
+        <Setter Property="Foreground" Value="Red"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+    </Style>
+
     <Style TargetType="{x:Type TextBox}">
         <Setter Property="FontSize" Value="{StaticResource NormalFontSize}"/>
         <Setter Property="Margin" Value="5"/>
@@ -83,4 +91,20 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+
+    <Style TargetType="{x:Type ComboBox}">
+        <Setter Property="FontSize" Value="{StaticResource NormalFontSize}"/>
+        <Setter Property="Margin" Value="5"/>
+        <Setter Property="BorderBrush" Value="DarkBlue"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="Background" Value="#FFB0F0FF"/>
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="BorderBrush" Value="DarkBlue"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Background" Value="#FFD0F8FF"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
 </ResourceDictionary>
