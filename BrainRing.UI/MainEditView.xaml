@@ -37,7 +37,6 @@
                 <DataTemplate DataType="{x:Type edit:ProcessEditViewModel}">
                     <edit:ProcessEditView DataContext="{Binding}"/>
                 </DataTemplate>
-
             </ContentControl.Resources>
         </ContentControl>
     </Grid>

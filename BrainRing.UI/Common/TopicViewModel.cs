@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using BrainRing.Core.Game;
 using CommunityToolkit.Mvvm.Input;
@@ -20,8 +19,8 @@ public class TopicViewModel : AbstractNotifyPropertyChanged
             topic.Questions
                 .Select(x => new QuestionViewModel(x))
                 .ToList());
-        AddQuestionCommand = new AsyncRelayCommand(ExecuteAddQuestion);
-        RemoveQuestionCommand = new AsyncRelayCommand<QuestionViewModel>(ExecuteRemoveQuestion);
+        AddQuestionCommand = new RelayCommand(ExecuteAddQuestion);
+        RemoveQuestionCommand = new RelayCommand<QuestionViewModel>(ExecuteRemoveQuestion);
     }
 
     public ICommand AddQuestionCommand { get; }
@@ -42,16 +41,14 @@ public class TopicViewModel : AbstractNotifyPropertyChanged
             Questions = Questions.Select(x => x.GetQuestion()).ToList()
         };
 
-    private Task ExecuteAddQuestion()
+    private void ExecuteAddQuestion()
     {
         Questions.Add(new QuestionViewModel());
-        return Task.CompletedTask;
     }
 
-    private Task ExecuteRemoveQuestion(QuestionViewModel? question)
+    private void ExecuteRemoveQuestion(QuestionViewModel? question)
     {
         if (question is not null && Questions.Contains(question))
             Questions.Remove(question);
-        return Task.CompletedTask;
     }
 }

@@ -11,23 +11,13 @@
     <Grid>
         <Grid.Resources>
             <ResourceDictionary>
+                <common:ObjectToVisibilityInvertConverter x:Key="ObjectToVisibilityInvertConverter"/>
+                <common:ObjectToVisibilityConverter x:Key="ObjectToVisibilityConverter"/>
+
                 <DataTemplate x:Key="BlitzRoundTemplate"
                               d:DataContext="{d:DesignInstance common:RoundViewModel}">
-                    <!--todo: как бы вынести это в отдельную вьюху, а то разметка повторяется-->
                     <Grid>
                         <Grid VerticalAlignment="Stretch">
-                            <Grid.Style>
-                                <Style TargetType="{x:Type Grid}">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding CurrentQuestion}"
-                                                     Value="{x:Null}">
-                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Grid.Style>
-
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
                                 <RowDefinition Height="Auto"/>
@@ -38,49 +28,52 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Grid.Row="0"
-                                   Grid.Column="0"
-                                   Grid.ColumnSpan="2"
-                                   Style="{StaticResource QuestionTextBlockStyle}"
-                                   Text="{Binding CurrentQuestion.Description}"/>
+                            <!--todo: если в блиц раунде нет вопросов кнопка будет отображаться, но ничего не делать-->
+                            <Button Grid.Row="0"
+                                    Grid.Column="0"
+                                    Grid.ColumnSpan="2"
+                                    Content="Начать блиц"
+                                    VerticalAlignment="Center"
+                                    Visibility="{Binding CurrentQuestion,
+                                        Converter={StaticResource ObjectToVisibilityInvertConverter}}"
+                                    Command="{Binding NextBlitzQuestionCommand}"/>
 
-                            <Image Grid.Row="1"
-                               Grid.Column="0"
-                               Grid.ColumnSpan="2"
-                               MaxHeight="500"
-                               Source="{Binding CurrentQuestion.BitmapImage}"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center"/>
+                            <Grid Grid.Row="0"
+                                  Grid.Column="0"
+                                  Grid.ColumnSpan="2"
+                                  Visibility="{Binding CurrentQuestion,
+                                        Converter={StaticResource ObjectToVisibilityConverter}}">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
 
-                            <Button Grid.Row="2"
-                                Grid.Column="0"
-                                HorizontalAlignment="Stretch"
-                                Content="Следующий"
-                                Command="{Binding RelativeSource={RelativeSource AncestorType=local:GameView},
+                                <!--todo: как бы вынести это в отдельную вьюху, а то разметка повторяется-->
+                                <TextBlock Grid.Row="0"
+                                           Style="{StaticResource QuestionTextBlockStyle}"
+                                           Text="{Binding CurrentQuestion.Description}"/>
+                                <Image Grid.Row="1"
+                                       MaxHeight="500"
+                                       Source="{Binding CurrentQuestion.BitmapImage}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                            </Grid>
+
+                            <Button Grid.Row="1"
+                                    Grid.Column="0"
+                                    HorizontalAlignment="Stretch"
+                                    Visibility="{Binding CurrentQuestion,
+                                            Converter={StaticResource ObjectToVisibilityConverter}}"
+                                    Content="Следующий"
+                                    Command="{Binding RelativeSource={RelativeSource AncestorType=local:GameView},
                                 Path=DataContext.NextBlitzQuestionCommand}"/>
 
-                            <Button Grid.Row="2"
+                            <Button Grid.Row="1"
                                 Grid.Column="1"
                                 Content="Завершить раунд"
                                 Command="{Binding RelativeSource={RelativeSource AncestorType=local:GameView},
                                 Path=DataContext.FinishRoundCommand}"/>
                         </Grid>
-
-                        <Button Content="Начать блиц"
-                                VerticalAlignment="Center"
-                                Command="{Binding NextBlitzQuestionCommand}">
-                            <Button.Style>
-                                <Style TargetType="{x:Type Button}">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding CurrentQuestion}"
-                                                     Value="{x:Null}">
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
                     </Grid>
                 </DataTemplate>
 

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using BrainRing.Core.Game;
@@ -47,8 +46,8 @@ public class RoundViewModel : AbstractNotifyPropertyChanged,IDisposable
 
         Topics = new ObservableCollection<TopicViewModel>(list);
 
-        AddTopicCommand = new AsyncRelayCommand(ExecuteAddTopic);
-        RemoveQuestionCommand = new AsyncRelayCommand<TopicViewModel>(ExecuteRemoveTopic);
+        AddTopicCommand = new RelayCommand(ExecuteAddTopic);
+        RemoveQuestionCommand = new RelayCommand<TopicViewModel>(ExecuteRemoveTopic);
         NextBlitzQuestionCommand = new AsyncRelayCommand(ExecuteNextBlitzQuestion);
     }
 
@@ -99,6 +98,17 @@ public class RoundViewModel : AbstractNotifyPropertyChanged,IDisposable
         };
     }
 
+    private void ExecuteAddTopic()
+    {
+        Topics.Add(new TopicViewModel());
+    }
+
+    private void ExecuteRemoveTopic(TopicViewModel? topic)
+    {
+        if (topic is not null && Topics.Contains(topic))
+            Topics.Remove(topic);
+    }
+
     private Task ExecuteNextBlitzQuestion()
     {
         if (_enumerator is null || !_enumerator.MoveNext())
@@ -108,19 +118,6 @@ public class RoundViewModel : AbstractNotifyPropertyChanged,IDisposable
         }
 
         CurrentQuestion = _enumerator.Current;
-        return Task.CompletedTask;
-    }
-
-    private Task ExecuteAddTopic()
-    {
-        Topics.Add(new TopicViewModel());
-        return Task.CompletedTask;
-    }
-
-    private Task ExecuteRemoveTopic(TopicViewModel? topic)
-    {
-        if (topic is not null && Topics.Contains(topic))
-            Topics.Remove(topic);
         return Task.CompletedTask;
     }
 

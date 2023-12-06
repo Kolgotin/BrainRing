@@ -83,7 +83,7 @@ public sealed class GameViewModel : AbstractStageContainer, IDisposable
 
         if (_enumerator.MoveNext())
         {
-            CurrentRound?.Dispose(); //todo: а тут не упадёт?
+            CurrentRound?.Dispose();
             CurrentQuestion = null;
             CurrentRound = new RoundViewModel(_enumerator.Current);
             CurrentContent = CurrentRound;
@@ -142,7 +142,6 @@ public sealed class GameViewModel : AbstractStageContainer, IDisposable
         return Task.CompletedTask;
     }
 
-    //todo: протестить вариант если в блитц раунде нет вопросов
     private Task ExecuteNextBlitzQuestion()
     {
         if (CurrentRound is null)
