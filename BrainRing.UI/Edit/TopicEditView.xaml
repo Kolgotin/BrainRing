@@ -32,7 +32,9 @@
         </DockPanel>
 
         <DataGrid Grid.Row="2"
-                  ItemsSource="{Binding Questions}">
+                  ItemsSource="{Binding Questions}"
+                  common:DataGridAttachedProperties.CommitOrDiscard="{Binding RelativeSource={RelativeSource AncestorType=local:ProcessEditView},
+                        Path=DataContext.NotifyNavigating}">
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="Вопрос"
                                         Width="4*">

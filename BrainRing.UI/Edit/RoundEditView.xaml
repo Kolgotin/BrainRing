@@ -51,7 +51,9 @@
         </DockPanel>
 
         <DataGrid Grid.Row="3"
-                  ItemsSource="{Binding Topics}">
+                  ItemsSource="{Binding Topics}"
+                  common:DataGridAttachedProperties.CommitOrDiscard="{Binding RelativeSource={RelativeSource AncestorType=local:ProcessEditView},
+                        Path=DataContext.NotifyNavigating}">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Название темы"
                                     Width="*"

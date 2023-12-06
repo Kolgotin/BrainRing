@@ -21,6 +21,7 @@ public class ProcessEditViewModel : AbstractGoNextCommandContainer
     private QuestionViewModel? _currentQuestion;
 
     private readonly string? _fileName;
+    private bool? _notifyNavigating;
 
     public ProcessEditViewModel(string? filename, Pack? pack = null)
     {
@@ -54,63 +55,99 @@ public class ProcessEditViewModel : AbstractGoNextCommandContainer
         get => _currentRound;
         set => SetAndRaise(ref _currentRound, value);
     }
+
     public TopicViewModel? CurrentTopic
     {
         get => _currentTopic;
         set => SetAndRaise(ref _currentTopic, value);
     }
+
     public QuestionViewModel? CurrentQuestion
     {
         get => _currentQuestion;
         set => SetAndRaise(ref _currentQuestion, value);
     }
 
-    private Task ExecuteGoToPack()
+    public bool? NotifyNavigating
     {
+        get => _notifyNavigating;
+        set => SetAndRaise(ref _notifyNavigating, value);
+    }
+
+    private async Task ExecuteGoToPack()
+    {
+        NotifyNavigating = true;
         CurrentQuestion = null;
         CurrentTopic = null;
         CurrentRound = null;
         CurrentContent = CurrentPack;
-        return Task.CompletedTask;
+        await Task.Delay(250);
+        NotifyNavigating = null;
     }
 
-    private Task ExecuteGoToRound(RoundViewModel? round)
+    private async Task ExecuteGoToRound(RoundViewModel? round)
     {
-        CurrentQuestion = null;
-        CurrentTopic = null;
-
-        if (round == null)
-            CurrentContent = CurrentRound!;
-        else
+        NotifyNavigating = true;
+        try
         {
-            CurrentRound = round;
-            CurrentContent = CurrentRound;
+            CurrentQuestion = null;
+            CurrentTopic = null;
+
+            if (round == null)
+                CurrentContent = CurrentRound!;
+            else
+            {
+                CurrentRound = round;
+                CurrentContent = CurrentRound;
+            }
+
+            await Task.Delay(250);
         }
-        return Task.CompletedTask;
-    }
-
-    private Task ExecuteGoToTopic(TopicViewModel? topic)
-    {
-        CurrentQuestion = null;
-
-        if (topic == null)
-            CurrentContent = CurrentTopic!;
-        else
+        finally
         {
-            CurrentTopic = topic;
-            CurrentContent = CurrentTopic;
+            NotifyNavigating = null;
         }
-        return Task.CompletedTask;
     }
 
-    private Task ExecuteGoToQuestion(QuestionViewModel? question)
+    private async Task ExecuteGoToTopic(TopicViewModel? topic)
     {
-        if (question == null)
-            return Task.CompletedTask;
+        NotifyNavigating = true;
+        try
+        {
+            CurrentQuestion = null;
 
-        CurrentQuestion = question;
-        CurrentContent = CurrentQuestion;
-        return Task.CompletedTask;
+            if (topic == null)
+                CurrentContent = CurrentTopic!;
+            else
+            {
+                CurrentTopic = topic;
+                CurrentContent = CurrentTopic;
+            }
+            NotifyNavigating = null;
+            await Task.Delay(250);
+        }
+        finally
+        {
+            NotifyNavigating = null;
+        }
+    }
+
+    private async Task ExecuteGoToQuestion(QuestionViewModel? question)
+    {
+        NotifyNavigating = true;
+        try
+        {
+            if (question == null)
+                return;
+
+            CurrentQuestion = question;
+            CurrentContent = CurrentQuestion;
+            await Task.Delay(250);
+        }
+        finally
+        {
+            NotifyNavigating = null;
+        }
     }
 
     private async Task ExecuteSavePack()
