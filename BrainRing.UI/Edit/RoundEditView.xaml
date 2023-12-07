@@ -84,7 +84,7 @@
                    Text="После сохранения все темы будут объединены в одну">
             <TextBlock.Style>
                 <Style TargetType="{x:Type TextBlock}"
-                       BasedOn="{StaticResource InfoTextBlockStyle}">
+                       BasedOn="{StaticResource AlarmTextBlockStyle}">
                     <Setter Property="Visibility" Value="Collapsed"/>
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding SelectedRoundType}"
