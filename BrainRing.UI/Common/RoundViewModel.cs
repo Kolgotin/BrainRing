@@ -5,19 +5,20 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using BrainRing.Core.Game;
+using BrainRing.Core.Interfaces;
 using CommunityToolkit.Mvvm.Input;
 using DynamicData.Binding;
 
 namespace BrainRing.UI.Common;
 
-public class RoundViewModel : AbstractNotifyPropertyChanged,IDisposable
+public class RoundViewModel : AbstractNotifyPropertyChanged
 {
     private RoundTypes _selectedQuestionType;
     private string _name;
     private QuestionViewModel? _currentQuestion;
 
-    //todo: лучше использовать индекс и избавиться от энумератора
-    private readonly IEnumerator<QuestionViewModel>? _enumerator;
+    private int _questionIndex;
+    private ObservableCollection<QuestionViewModel>? _questions;
 
     public RoundViewModel(RoundBase? round = null)
     {
@@ -35,7 +36,7 @@ public class RoundViewModel : AbstractNotifyPropertyChanged,IDisposable
                 {
                     topic
                 };
-                _enumerator = topic.Questions.GetEnumerator();
+                _questions = topic.Questions;
                 break;
             case SimpleRound _:
             default:
@@ -46,11 +47,12 @@ public class RoundViewModel : AbstractNotifyPropertyChanged,IDisposable
                 break;
         }
 
+        _questionIndex = 0;
         Topics = new ObservableCollection<TopicViewModel>(list);
 
         AddTopicCommand = new RelayCommand(ExecuteAddTopic);
         RemoveTopicCommand = new RelayCommand<TopicViewModel>(ExecuteRemoveTopic);
-        NextBlitzQuestionCommand = new AsyncRelayCommand(ExecuteNextBlitzQuestion);
+        NextBlitzQuestionCommand = new RelayCommand(ExecuteNextBlitzQuestion);
     }
 
     public ICommand AddTopicCommand { get; }
@@ -111,20 +113,15 @@ public class RoundViewModel : AbstractNotifyPropertyChanged,IDisposable
             Topics.Remove(topic);
     }
 
-    private Task ExecuteNextBlitzQuestion()
+    private void ExecuteNextBlitzQuestion()
     {
-        if (_enumerator is null || !_enumerator.MoveNext())
+        if (_questions is null || _questionIndex >= _questions.Count)
         {
             CurrentQuestion = null;
-            return Task.CompletedTask;
+            return;
         }
 
-        CurrentQuestion = _enumerator.Current;
-        return Task.CompletedTask;
-    }
-
-    public void Dispose()
-    {
-        _enumerator?.Dispose();
+        CurrentQuestion = _questions[_questionIndex];
+        _questionIndex++;
     }
 }

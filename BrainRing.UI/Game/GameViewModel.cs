@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using BrainRing.Core.Game;
 using BrainRing.Core.Interfaces;
 using BrainRing.Core.Stages;
 using BrainRing.UI.Common;
@@ -11,22 +9,21 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace BrainRing.UI.Game;
 
-//todo: проверить что диспозится всё что нужно
 //todo: удалить асинхронщину везде где она не нужна
-public sealed class GameViewModel : AbstractStageContainer, IDisposable
+public sealed class GameViewModel : AbstractStageContainer
 {
     private readonly GameStage _stage;
     private RoundViewModel? _currentRound; 
     private QuestionViewModel? _currentQuestion;
-    private List<RoundBase>.Enumerator _enumerator;
     private object _currentContent;
+    private int _roundIndex;
 
     public GameViewModel(GameStage stage)
     {
         _stage = stage;
         Players = _stage.Players.Select(x => new PlayerViewModel(x)).ToList();
         SelectAnsweringViewModel = new SelectAnsweringViewModel(Players);
-        _enumerator = _stage.Pack.Rounds.GetEnumerator();
+        _roundIndex = 0;
 
         NextRoundCommand = new AsyncRelayCommand(ExecuteNextRound);
         ShowQuestionCommand = new AsyncRelayCommand<QuestionViewModel?>(ExecuteShowQuestion);
@@ -81,17 +78,17 @@ public sealed class GameViewModel : AbstractStageContainer, IDisposable
 
         Players.ForEach(x => x.SaveScore());
 
-        if (_enumerator.MoveNext())
+        if (_roundIndex < _stage.Pack.Rounds.Count)
         {
-            CurrentRound?.Dispose();
             CurrentQuestion = null;
-            CurrentRound = new RoundViewModel(_enumerator.Current);
+            CurrentRound = new RoundViewModel(_stage.Pack.Rounds[_roundIndex]);
             CurrentContent = CurrentRound;
         }
         else
         {
             GoNextCommand?.Execute(null);
         }
+        _roundIndex++;
     }
 
     private Task ExecuteShowQuestion(QuestionViewModel? question)
@@ -165,10 +162,5 @@ public sealed class GameViewModel : AbstractStageContainer, IDisposable
 
         if (confirmed)
             CurrentContent = new FinishRoundViewModel(Players);
-    }
-
-    public void Dispose()
-    {
-        _enumerator.Dispose();
     }
 }

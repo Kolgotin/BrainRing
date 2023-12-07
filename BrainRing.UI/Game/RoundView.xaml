@@ -90,6 +90,7 @@
                                   ItemsSource="{Binding Topics}"
                                   VerticalAlignment="Center"
                                   HorizontalAlignment="Stretch"
+                                  VerticalScrollBarVisibility="Auto"
                                   HeadersVisibility="None">
                             <DataGrid.Resources>
                                 <ResourceDictionary>
@@ -113,8 +114,9 @@
                                 <DataGridTemplateColumn Width="*">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <ListBox ItemsSource="{Binding Questions}"
-                                                     HorizontalAlignment="Center"
+                                            <ListBox Name="QuestionsListBox"
+                                                     ItemsSource="{Binding Questions}"
+                                                     HorizontalAlignment="Stretch"
                                                      HorizontalContentAlignment="Center"
                                                      Background="AliceBlue"
                                                      BorderThickness="0">
@@ -134,8 +136,8 @@
                                                 </ListBox.Resources>
                                                 <ListBox.ItemsPanel>
                                                     <ItemsPanelTemplate>
-                                                        <StackPanel Orientation="Horizontal"
-                                                                    HorizontalAlignment="Stretch"/>
+                                                        <WrapPanel HorizontalAlignment="Stretch"
+                                                                   MaxWidth="{Binding ElementName=QuestionsListBox, Path=ActualWidth}"/>
                                                     </ItemsPanelTemplate>
                                                 </ListBox.ItemsPanel>
                                                 <ListBox.ItemTemplate>
