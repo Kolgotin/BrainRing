@@ -1,0 +1,179 @@
+﻿<UserControl x:Class="BrainRing.UI.Game.RoundView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:BrainRing.UI.Game"
+             xmlns:common="clr-namespace:BrainRing.UI.Common"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance common:RoundViewModel}">
+    <Grid>
+        <Grid.Resources>
+            <ResourceDictionary>
+                <common:ObjectToVisibilityInvertConverter x:Key="ObjectToVisibilityInvertConverter"/>
+                <common:ObjectToVisibilityConverter x:Key="ObjectToVisibilityConverter"/>
+
+                <DataTemplate x:Key="BlitzRoundTemplate"
+                              d:DataContext="{d:DesignInstance common:RoundViewModel}">
+                    <Grid>
+                        <Grid VerticalAlignment="Stretch">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!--todo: обработать все кейсы: если в блиц раунде нет темы; есть тема, но нет вопросов; т.д. -->
+                            <Button Grid.Row="0"
+                                    Grid.Column="0"
+                                    Grid.ColumnSpan="2"
+                                    Content="Начать блиц"
+                                    VerticalAlignment="Center"
+                                    Visibility="{Binding CurrentQuestion,
+                                        Converter={StaticResource ObjectToVisibilityInvertConverter}}"
+                                    Command="{Binding NextBlitzQuestionCommand}"/>
+
+                            <Grid Grid.Row="0"
+                                  Grid.Column="0"
+                                  Grid.ColumnSpan="2"
+                                  Visibility="{Binding CurrentQuestion,
+                                        Converter={StaticResource ObjectToVisibilityConverter}}">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!--todo: как бы вынести это в отдельную вьюху, а то разметка повторяется-->
+                                <TextBlock Grid.Row="0"
+                                           Style="{StaticResource QuestionTextBlockStyle}"
+                                           Text="{Binding CurrentQuestion.Description}"/>
+                                <Image Grid.Row="1"
+                                       MaxHeight="500"
+                                       Source="{Binding CurrentQuestion.BitmapImage}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                            </Grid>
+
+                            <Button Grid.Row="1"
+                                    Grid.Column="0"
+                                    HorizontalAlignment="Stretch"
+                                    Visibility="{Binding CurrentQuestion,
+                                            Converter={StaticResource ObjectToVisibilityConverter}}"
+                                    Content="Следующий"
+                                    Command="{Binding RelativeSource={RelativeSource AncestorType=local:GameView},
+                                Path=DataContext.NextBlitzQuestionCommand}"/>
+
+                            <Button Grid.Row="1"
+                                Grid.Column="1"
+                                Content="Завершить раунд"
+                                Command="{Binding RelativeSource={RelativeSource AncestorType=local:GameView},
+                                Path=DataContext.FinishRoundCommand}"/>
+                        </Grid>
+                    </Grid>
+                </DataTemplate>
+
+                <DataTemplate x:Key="SimpleRoundTemplate"
+                              d:DataContext="{d:DesignInstance common:RoundViewModel}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <DataGrid Grid.Row="0"
+                                  Unloaded="FrameworkElement_OnUnloaded"
+                                  ItemsSource="{Binding Topics}"
+                                  VerticalAlignment="Center"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalScrollBarVisibility="Auto"
+                                  HeadersVisibility="None">
+                            <DataGrid.Resources>
+                                <ResourceDictionary>
+                                    <Style TargetType="{x:Type DataGridCell}"
+                                           BasedOn="{StaticResource {x:Type DataGridCell}}">
+                                        <Setter Property="FontSize" Value="{StaticResource NormalFontSize}"/>
+                                    </Style>
+                                </ResourceDictionary>
+                            </DataGrid.Resources>
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn>
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <TextBlock Text="{Binding Name}"
+                                                           VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Width="*">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ListBox Name="QuestionsListBox"
+                                                     ItemsSource="{Binding Questions}"
+                                                     HorizontalAlignment="Stretch"
+                                                     HorizontalContentAlignment="Center"
+                                                     Background="AliceBlue"
+                                                     BorderThickness="0">
+                                                <ListBox.Resources>
+                                                    <ResourceDictionary>
+                                                        <Style TargetType="{x:Type ListBoxItem}"
+                                                               d:DataContext="{d:DesignInstance common:QuestionViewModel}">
+                                                            <Setter Property="Padding" Value="5"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsAnswered}"
+                                                                             Value="True">
+                                                                    <Setter Property="IsEnabled" Value="False"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </ResourceDictionary>
+                                                </ListBox.Resources>
+                                                <ListBox.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <WrapPanel HorizontalAlignment="Stretch"
+                                                                   MaxWidth="{Binding ElementName=QuestionsListBox, Path=ActualWidth}"/>
+                                                    </ItemsPanelTemplate>
+                                                </ListBox.ItemsPanel>
+                                                <ListBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Button Margin="0"
+                                                                Padding="5"
+                                                                Width="150"
+                                                                Content="{Binding Cost}"
+                                                                Command="{Binding
+                                                                    RelativeSource={RelativeSource AncestorType=local:GameView}, 
+                                                                    Path=DataContext.ShowQuestionCommand}"
+                                                                CommandParameter="{Binding}"/>
+                                                    </DataTemplate>
+                                                </ListBox.ItemTemplate>
+                                            </ListBox>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <Button Grid.Row="1"
+                                HorizontalAlignment="Right"
+                                Content="Завершить раунд"
+                                Command="{Binding RelativeSource={RelativeSource AncestorType=local:GameView},
+                                Path=DataContext.FinishRoundCommand}"/>
+                    </Grid>
+                </DataTemplate>
+
+                <local:RoundDataTemplateSelector x:Key="RoundDataTemplateSelector"
+                                                 BlitzRoundTemplate="{StaticResource BlitzRoundTemplate}"
+                                                 SimpleRoundTemplate="{StaticResource SimpleRoundTemplate}"/>
+            </ResourceDictionary>
+        </Grid.Resources>
+
+        <ContentControl Content="{Binding}"
+                        ContentTemplateSelector="{StaticResource RoundDataTemplateSelector}"/>
+    </Grid>
+</UserControl>

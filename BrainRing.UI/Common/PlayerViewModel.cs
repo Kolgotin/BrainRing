@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using System.Threading.Tasks;
+﻿using System.Reactive.Linq;
 using BrainRing.Core;
 using DynamicData.Binding;
 
@@ -7,6 +6,8 @@ namespace BrainRing.UI.Common;
 
 public class PlayerViewModel : AbstractNotifyPropertyChanged
 {
+    private int _roundScore;
+
     public PlayerViewModel()
     {
         Player = new Player();
@@ -30,14 +31,21 @@ public class PlayerViewModel : AbstractNotifyPropertyChanged
         }
     }
 
-    public int Score
+    public int Score => _roundScore + Player.Score;
+
+    public int RoundScore
     {
-        get => Player.Score;
+        get => _roundScore;
         set
         {
-            if (value == Player.Score) return;
-            Player.Score = value;
-            OnPropertyChanged();
+            SetAndRaise(ref _roundScore, value);
+            OnPropertyChanged(nameof(Score));
         }
+    }
+
+    public void SaveScore()
+    {
+        Player.Score = _roundScore + Player.Score;
+        _roundScore = 0;
     }
 }

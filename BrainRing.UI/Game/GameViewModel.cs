@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using BrainRing.Core.Game;
 using BrainRing.Core.Interfaces;
 using BrainRing.Core.Stages;
 using BrainRing.UI.Common;
@@ -11,36 +9,39 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace BrainRing.UI.Game;
 
-public sealed class GameViewModel : AbstractStageContainer, IDisposable
+//todo: удалить асинхронщину везде где она не нужна
+public sealed class GameViewModel : AbstractStageContainer
 {
     private readonly GameStage _stage;
-    private RoundViewModel _currentRound; 
+    private RoundViewModel? _currentRound; 
     private QuestionViewModel? _currentQuestion;
-    private List<Round>.Enumerator _enumerator;
     private object _currentContent;
+    private int _roundIndex;
 
     public GameViewModel(GameStage stage)
     {
         _stage = stage;
         Players = _stage.Players.Select(x => new PlayerViewModel(x)).ToList();
         SelectAnsweringViewModel = new SelectAnsweringViewModel(Players);
-        _enumerator = _stage.Pack.Rounds.GetEnumerator();
+        _roundIndex = 0;
 
         NextRoundCommand = new AsyncRelayCommand(ExecuteNextRound);
         ShowQuestionCommand = new AsyncRelayCommand<QuestionViewModel?>(ExecuteShowQuestion);
         AnswerCommand = new AsyncRelayCommand(ExecuteAnswer);
         SelectAnsweringCommand = new AsyncRelayCommand<PlayerViewModel?>(ExecuteSelectAnswering);
         ReturnToQuestionCommand = new AsyncRelayCommand(ExecuteReturnToQuestion);
+        NextBlitzQuestionCommand = new AsyncRelayCommand(ExecuteNextBlitzQuestion);
         FinishRoundCommand = new AsyncRelayCommand(ExecuteFinishRound);
         NextRoundCommand.Execute(null);
     }
 
     public ICommand NextRoundCommand { get; }
-    public ICommand? ShowQuestionCommand { get; }
-    public ICommand? AnswerCommand { get; }
-    public ICommand? SelectAnsweringCommand { get; }
-    public ICommand? ReturnToQuestionCommand { get; }
-    public ICommand? FinishRoundCommand { get; }
+    public ICommand ShowQuestionCommand { get; }
+    public ICommand AnswerCommand { get; }
+    public ICommand SelectAnsweringCommand { get; }
+    public ICommand ReturnToQuestionCommand { get; }
+    public ICommand NextBlitzQuestionCommand { get; }
+    public ICommand FinishRoundCommand { get; }
 
     public List<PlayerViewModel> Players { get; }
 
@@ -52,7 +53,7 @@ public sealed class GameViewModel : AbstractStageContainer, IDisposable
         set => SetAndRaise(ref _currentContent, value);
     }
 
-    public RoundViewModel CurrentRound
+    public RoundViewModel? CurrentRound
     {
         get => _currentRound;
         set => SetAndRaise(ref _currentRound, value);
@@ -69,19 +70,25 @@ public sealed class GameViewModel : AbstractStageContainer, IDisposable
         return _stage.Next();
     }
 
-    private Task ExecuteNextRound()
+    private async Task ExecuteNextRound()
     {
-        if (_enumerator.MoveNext())
+        if (CurrentRound is not null &&
+            !await ShowDialogService.ShowYesNowMessage("Вы уверены что хотите завершить раунд?"))
+            return;
+
+        Players.ForEach(x => x.SaveScore());
+
+        if (_roundIndex < _stage.Pack.Rounds.Count)
         {
-            CurrentRound = new RoundViewModel(_enumerator.Current);
+            CurrentQuestion = null;
+            CurrentRound = new RoundViewModel(_stage.Pack.Rounds[_roundIndex]);
             CurrentContent = CurrentRound;
         }
         else
         {
             GoNextCommand?.Execute(null);
         }
-
-        return Task.CompletedTask;
+        _roundIndex++;
     }
 
     private Task ExecuteShowQuestion(QuestionViewModel? question)
@@ -105,6 +112,12 @@ public sealed class GameViewModel : AbstractStageContainer, IDisposable
         CurrentQuestion?.Answer(player);
         CurrentQuestion = null;
 
+        if (CurrentRound is null)
+        {
+            CurrentContent = new FinishRoundViewModel(Players);
+            return Task.CompletedTask;
+        }
+
         if (CurrentRound.Topics
             .Any(x => x.Questions.Any(y => !y.IsAnswered)))
             CurrentContent = CurrentRound;
@@ -117,22 +130,37 @@ public sealed class GameViewModel : AbstractStageContainer, IDisposable
     private Task ExecuteReturnToQuestion()
     {
         if (CurrentQuestion is null)
-            CurrentContent = CurrentRound;
+            if (CurrentRound is null)
+                CurrentContent = new FinishRoundViewModel(Players);
+            else
+                CurrentContent = CurrentRound;
         else
             CurrentContent = CurrentQuestion;
         return Task.CompletedTask;
     }
 
+    private Task ExecuteNextBlitzQuestion()
+    {
+        if (CurrentRound is null)
+        {
+            CurrentContent = new FinishRoundViewModel(Players);
+            return Task.CompletedTask;
+        }
+
+        CurrentRound.NextBlitzQuestionCommand.Execute(null);
+
+        if (CurrentRound.CurrentQuestion is null)
+            CurrentContent = new FinishRoundViewModel(Players);
+
+        return Task.CompletedTask;
+    }
+
     private async Task ExecuteFinishRound()
     {
-        var confirmed = await ShowDialogService.ShowYesNowMessage("Вы уверены что хотите завершить раунд досрочно?");
+        var confirmed =
+            await ShowDialogService.ShowYesNowMessage("Вы уверены что хотите завершить раунд досрочно?");
 
         if (confirmed)
             CurrentContent = new FinishRoundViewModel(Players);
-    }
-
-    public void Dispose()
-    {
-        _enumerator.Dispose();
     }
 }

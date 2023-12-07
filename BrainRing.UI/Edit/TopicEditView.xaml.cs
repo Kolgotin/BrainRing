@@ -1,14 +1,14 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace BrainRing.UI.SetPlayers;
+namespace BrainRing.UI.Edit;
 
 /// <summary>
-/// Interaction logic for SetPlayersView.xaml
+/// Interaction logic for TopicEditView.xaml
 /// </summary>
-public partial class SetPlayersView : UserControl
+public partial class TopicEditView : UserControl
 {
-    public SetPlayersView()
+    public TopicEditView()
     {
         InitializeComponent();
     }

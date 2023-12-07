@@ -12,10 +12,8 @@ public class GameStage : IStage
     }
 
     public Pack Pack { get; }
-    //todo сюда счёт сохранять
+ 
     public IReadOnlyList<Player> Players { get; }
-
-    public Round CurrentRound { get; set; }
 
     public IStage Next()
     {

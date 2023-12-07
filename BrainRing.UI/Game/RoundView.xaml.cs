@@ -1,14 +1,14 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace BrainRing.UI.SetPlayers;
+namespace BrainRing.UI.Game;
 
 /// <summary>
-/// Interaction logic for SetPlayersView.xaml
+/// Interaction logic for RoundView.xaml
 /// </summary>
-public partial class SetPlayersView : UserControl
+public partial class RoundView : UserControl
 {
-    public SetPlayersView()
+    public RoundView()
     {
         InitializeComponent();
     }

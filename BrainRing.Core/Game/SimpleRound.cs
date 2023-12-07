@@ -1,13 +1,13 @@
 ﻿namespace BrainRing.Core.Game;
 
-public class Round
+public class SimpleRound : RoundBase
 {
-    public Round()
+    public SimpleRound()
     {
-        Name = "";
         Topics = new List<Topic>();
     }
 
-    public string Name { get; set; }
     public List<Topic> Topics { get; set; }
+
+    public override List<Topic> GetTopics() => Topics;
 }

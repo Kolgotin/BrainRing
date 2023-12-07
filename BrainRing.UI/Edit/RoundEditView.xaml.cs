@@ -1,18 +1,19 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace BrainRing.UI.SetPlayers;
+namespace BrainRing.UI.Edit;
 
 /// <summary>
-/// Interaction logic for SetPlayersView.xaml
+/// Interaction logic for RoundEditView.xaml
 /// </summary>
-public partial class SetPlayersView : UserControl
+public partial class RoundEditView : UserControl
 {
-    public SetPlayersView()
+    public RoundEditView()
     {
         InitializeComponent();
     }
-
+    
+    //взято отсюда https://stackoverflow.com/questions/18281615/deferrefresh-is-not-allowed-during-an-addnew-or-edititem-transaction
     private void FrameworkElement_OnUnloaded(object sender, RoutedEventArgs e)
     {
         if (sender is not DataGrid dataGrid)

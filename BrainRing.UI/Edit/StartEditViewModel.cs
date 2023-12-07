@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -7,7 +6,6 @@ using BrainRing.Core.Game;
 using BrainRing.Managers;
 using BrainRing.UI.Common;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Win32;
 
 namespace BrainRing.UI.Edit;
 
@@ -16,35 +14,36 @@ public class StartEditViewModel : AbstractGoNextCommandContainer
 {
     private Pack? _pack;
     private readonly MainEditViewModel _host;
-    private string _fileName;
+    private string? _fileName;
 
     public StartEditViewModel(MainEditViewModel host)
     {
         _host = host;
-        LoadJsonCommand = new AsyncRelayCommand(ExecuteLoadJson);
+        LoadPackCommand = new AsyncRelayCommand(ExecuteLoadPack);
         GoNextCommand = new AsyncRelayCommand(ExecuteGoNext);
     }
 
-    public ICommand LoadJsonCommand { get; }
+    public ICommand LoadPackCommand { get; }
 
-    public string FileName
+    public string? FileName
     {
         get => _fileName;
         set => SetAndRaise(ref _fileName, value);
     }
 
-    private async Task ExecuteLoadJson()
+    private async Task ExecuteLoadPack()
     {
         try
         {
-            var fullFileName = await ShowDialogService.SelectJsonFilePath();
+            var fullFileName = await ShowDialogService.SelectPackFilePath();
 
             if (fullFileName is null)
                 return;
 
-            var pack = FileManager.ReadJsonFile(fullFileName);
+            var pack = await FileManager.ReadPackFile(fullFileName);
             FileName = Path.GetFileName(fullFileName);
             _pack = pack ?? new Pack();
+            await ExecuteGoNext();
         }
         catch (Exception e)
         {

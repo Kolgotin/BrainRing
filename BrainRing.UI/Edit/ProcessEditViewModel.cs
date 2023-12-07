@@ -6,11 +6,12 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace BrainRing.UI.Edit;
 
+//полезные ссылки:
+//https://rsdn.org/forum/dotnet.gui/4001738.flat
 public class ProcessEditViewModel : AbstractGoNextCommandContainer
 {
     private object _currentContent;
 
-    private readonly PackViewModel _currentPack;
     private RoundViewModel? _currentRound;
     private TopicViewModel? _currentTopic;
     private QuestionViewModel? _currentQuestion;
@@ -20,13 +21,13 @@ public class ProcessEditViewModel : AbstractGoNextCommandContainer
     public ProcessEditViewModel(string? filename, Pack? pack = null)
     {
         _fileName = filename;
-        _currentPack = new PackViewModel(pack);
-        _currentContent = _currentPack;
+        CurrentPack = new PackViewModel(pack);
+        _currentContent = CurrentPack;
         GoToPackCommand = new AsyncRelayCommand(ExecuteGoToPack);
         GoToRoundCommand = new AsyncRelayCommand<RoundViewModel?>(ExecuteGoToRound);
         GoToTopicCommand = new AsyncRelayCommand<TopicViewModel?>(ExecuteGoToTopic);
         GoToQuestionCommand = new AsyncRelayCommand<QuestionViewModel?>(ExecuteGoToQuestion);
-        SaveJsonCommand = new AsyncRelayCommand(ExecuteSaveJson);
+        SavePackCommand = new AsyncRelayCommand(ExecuteSavePack);
     }
 
     public ICommand GoToPackCommand { get; }
@@ -34,7 +35,7 @@ public class ProcessEditViewModel : AbstractGoNextCommandContainer
     public ICommand GoToTopicCommand { get; }
     public ICommand GoToQuestionCommand { get; }
 
-    public ICommand SaveJsonCommand { get; }
+    public ICommand SavePackCommand { get; }
 
     public object CurrentContent
     {
@@ -42,40 +43,58 @@ public class ProcessEditViewModel : AbstractGoNextCommandContainer
         set => SetAndRaise(ref _currentContent, value);
     }
 
+    public PackViewModel CurrentPack { get; }
+
+    public RoundViewModel? CurrentRound
+    {
+        get => _currentRound;
+        set => SetAndRaise(ref _currentRound, value);
+    }
+    public TopicViewModel? CurrentTopic
+    {
+        get => _currentTopic;
+        set => SetAndRaise(ref _currentTopic, value);
+    }
+    public QuestionViewModel? CurrentQuestion
+    {
+        get => _currentQuestion;
+        set => SetAndRaise(ref _currentQuestion, value);
+    }
+
     private Task ExecuteGoToPack()
     {
-        _currentQuestion = null;
-        _currentTopic = null;
-        _currentRound = null;
-        CurrentContent = _currentPack;
+        CurrentQuestion = null;
+        CurrentTopic = null;
+        CurrentRound = null;
+        CurrentContent = CurrentPack;
         return Task.CompletedTask;
     }
 
     private Task ExecuteGoToRound(RoundViewModel? round)
     {
-        _currentQuestion = null;
-        _currentTopic = null;
+        CurrentQuestion = null;
+        CurrentTopic = null;
 
         if (round == null)
-            CurrentContent = _currentRound!;
+            CurrentContent = CurrentRound!;
         else
         {
-            _currentRound = round;
-            CurrentContent = _currentRound;
+            CurrentRound = round;
+            CurrentContent = CurrentRound;
         }
         return Task.CompletedTask;
     }
 
     private Task ExecuteGoToTopic(TopicViewModel? topic)
     {
-        _currentQuestion = null;
+        CurrentQuestion = null;
 
         if (topic == null)
-            CurrentContent = _currentTopic!;
+            CurrentContent = CurrentTopic!;
         else
         {
-            _currentTopic = topic;
-            CurrentContent = _currentTopic;
+            CurrentTopic = topic;
+            CurrentContent = CurrentTopic;
         }
         return Task.CompletedTask;
     }
@@ -85,17 +104,14 @@ public class ProcessEditViewModel : AbstractGoNextCommandContainer
         if (question == null)
             return Task.CompletedTask;
 
-        _currentQuestion = question;
-        CurrentContent = _currentQuestion;
+        CurrentQuestion = question;
+        CurrentContent = CurrentQuestion;
         return Task.CompletedTask;
     }
 
-    private async Task ExecuteSaveJson()
+    private async Task ExecuteSavePack()
     {
-        var pack = _currentPack.GetPack();
-        if (await ShowDialogService.SavePack(pack, _fileName))
-            await ShowDialogService.ShowInfo("Файл успешно сохранён");
-        else
-            await ShowDialogService.ShowError("Ошибка при сохранении файла");
+        var pack = CurrentPack.GetPack();
+        await ShowDialogService.SavePack(pack, _fileName);
     }
 }

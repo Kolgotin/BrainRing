@@ -5,9 +5,9 @@ public class Pack
     public Pack()
     {
         Name = "";
-        Rounds = new List<Round>();
+        Rounds = new List<RoundBase>();
     }
 
     public string Name { get; set; }
-    public List<Round> Rounds { get; set; }
+    public List<RoundBase> Rounds { get; set; }
 }

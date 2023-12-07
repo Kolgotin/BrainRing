@@ -2,11 +2,11 @@
 
 namespace BrainRing.Core.Game;
 
-[JsonDerivedType(typeof(TextQuestion), typeDiscriminator: "text")]
-[JsonDerivedType(typeof(ImageQuestion), typeDiscriminator: "withImage")]
-public class QuestionBase
+[JsonDerivedType(typeof(TextQuestion), typeDiscriminator: "t")]
+[JsonDerivedType(typeof(ImageQuestion), typeDiscriminator: "i")]
+public abstract class QuestionBase
 {
-    public QuestionBase()
+    protected QuestionBase()
     {
         Description = "";
         Cost = 1;

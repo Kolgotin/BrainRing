@@ -1,11 +1,9 @@
-﻿using BrainRing.Core.Game;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
-using System.Collections.Generic;
-using DynamicData.Binding;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using System.Windows.Input;
+using BrainRing.Core.Game;
 using CommunityToolkit.Mvvm.Input;
+using DynamicData.Binding;
 
 namespace BrainRing.UI.Common;
 
@@ -21,8 +19,8 @@ public class PackViewModel : AbstractNotifyPropertyChanged
             pack.Rounds
                 .Select(x => new RoundViewModel(x))
                 .ToList());
-        AddRoundCommand = new AsyncRelayCommand(ExecuteAddRound);
-        RemoveRoundCommand = new AsyncRelayCommand<RoundViewModel>(ExecuteRemoveRound);
+        AddRoundCommand = new RelayCommand(ExecuteAddRound);
+        RemoveRoundCommand = new RelayCommand<RoundViewModel>(ExecuteRemoveRound);
     }
 
     public ICommand AddRoundCommand { get; }
@@ -43,16 +41,14 @@ public class PackViewModel : AbstractNotifyPropertyChanged
             Rounds = Rounds.Select(x => x.GetRound()).ToList()
         };
 
-    private Task ExecuteAddRound()
+    private void ExecuteAddRound()
     {
         Rounds.Add(new RoundViewModel());
-        return Task.CompletedTask;
     }
 
-    private Task ExecuteRemoveRound(RoundViewModel? round)
+    private void ExecuteRemoveRound(RoundViewModel? round)
     {
         if (round is not null && Rounds.Contains(round))
             Rounds.Remove(round);
-        return Task.CompletedTask;
     }
 }

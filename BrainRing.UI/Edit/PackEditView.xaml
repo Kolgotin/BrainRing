@@ -1,0 +1,83 @@
+﻿<UserControl x:Class="BrainRing.UI.Edit.PackEditView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:gmCore="clr-namespace:BrainRing.Core.Game;assembly=BrainRing.Core"
+             xmlns:common="clr-namespace:BrainRing.UI.Common"
+             xmlns:local="clr-namespace:BrainRing.UI.Edit"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance common:PackViewModel}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0">
+            <TextBlock DockPanel.Dock="Left"
+                       Text="Игра: "/>
+
+            <TextBox HorizontalAlignment="Stretch"
+                     TextWrapping="NoWrap"
+                     Text="{Binding Name}"/>
+        </DockPanel>
+
+        <DataGrid Grid.Row="1"
+                  Unloaded="FrameworkElement_OnUnloaded"
+                  ItemsSource="{Binding Rounds}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Название раунда"
+                                    Width="4*"
+                                    Binding="{Binding Name, UpdateSourceTrigger=LostFocus}"/>
+                <DataGridTemplateColumn Header="Тип"
+                                        Width="*">
+                    <!--todo: попробовать вынести это в отдельный стиль-->
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock>
+                                <TextBlock.Style>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="Text" Value="s"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedRoundType}"
+                                                         Value="{x:Static gmCore:RoundTypes.BlitzRound}">
+                                                <Setter Property="Text" Value="b"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="2*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Править"
+                                    Command="{Binding RelativeSource={RelativeSource AncestorType=local:ProcessEditView},
+                                                Path=DataContext.GoToRoundCommand}"
+                                    CommandParameter="{Binding}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="2*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Удалить"
+                                    Command="{Binding RelativeSource={RelativeSource AncestorType=DataGrid},
+                                                Path=DataContext.RemoveRoundCommand}"
+                                    CommandParameter="{Binding}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <Button Grid.Row="2"
+                Content="Добавить"
+                Command="{Binding Path=AddRoundCommand}"/>
+    </Grid>
+</UserControl>

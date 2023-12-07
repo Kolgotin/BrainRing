@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace BrainRing.UI.Start;
 
+//todo: добавить крутилку пока грузится пак
 public class StartViewModel : AbstractStageContainer
 {
     private readonly StartStage _stage;
@@ -21,10 +22,10 @@ public class StartViewModel : AbstractStageContainer
     public StartViewModel(StartStage startStage)
     {
         _stage = startStage;
-        LoadJsonCommand = new AsyncRelayCommand(ExecuteLoadJson);
+        LoadPackCommand = new AsyncRelayCommand(ExecuteLoadPack);
     }
 
-    public ICommand LoadJsonCommand { get; }
+    public ICommand LoadPackCommand { get; }
 
     public Pack? Pack
     {
@@ -42,16 +43,16 @@ public class StartViewModel : AbstractStageContainer
         return _stage.Next();
     }
 
-    private async Task ExecuteLoadJson()
+    private async Task ExecuteLoadPack()
     {
         try
         {
-            var fileName = await ShowDialogService.SelectJsonFilePath();
+            var fileName = await ShowDialogService.SelectPackFilePath();
 
             if (fileName is null)
                 return;
 
-            var pack = FileManager.ReadJsonFile(fileName);
+            var pack = await FileManager.ReadPackFile(fileName);
 
             if (pack is null || pack.Rounds.Count == 0)
             {

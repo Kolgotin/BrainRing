@@ -25,8 +25,8 @@
                     </Style>
                 </TextBlock.Style>
             </TextBlock>
-            <Button Content="Загрузить из json файла"
-                    Command="{Binding LoadJsonCommand}"/>
+            <Button Content="Загрузить из файла"
+                    Command="{Binding LoadPackCommand}"/>
             <Button Content="Начать"
                     Command="{Binding GoNextCommand}"/>
         </StackPanel>

@@ -4,6 +4,7 @@ using DynamicData.Binding;
 
 namespace BrainRing.UI;
 
+//todo: почитать https://github.com/Fody/PropertyChanged - что-то про автоматические viewmodel для сущностей
 public class MainEditViewModel : AbstractNotifyPropertyChanged
 {
     private AbstractGoNextCommandContainer _currentContent;
