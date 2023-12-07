@@ -26,6 +26,7 @@
         </DockPanel>
 
         <DataGrid Grid.Row="1"
+                  Unloaded="FrameworkElement_OnUnloaded"
                   ItemsSource="{Binding Rounds}">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Название раунда"

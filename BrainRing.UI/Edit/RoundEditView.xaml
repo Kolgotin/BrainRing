@@ -51,6 +51,7 @@
         </DockPanel>
 
         <DataGrid Grid.Row="3"
+                  Unloaded="FrameworkElement_OnUnloaded"
                   ItemsSource="{Binding Topics}">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Название темы"

@@ -96,6 +96,7 @@
                             </Grid.RowDefinitions>
 
                             <DataGrid Grid.Row="0"
+                                      Unloaded="FrameworkElement_OnUnloaded"
                                       VerticalAlignment="Center"
                                       ItemsSource="{Binding Players}"
                                       HeadersVisibility="Column">
@@ -148,6 +149,7 @@
         <DataGrid Grid.Row="0"
                   Grid.Column="2"
                   Grid.RowSpan="2"
+                  Unloaded="FrameworkElement_OnUnloaded"
                   IsReadOnly="True"
                   ItemsSource="{Binding Players}"
                   HeadersVisibility="Column"

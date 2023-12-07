@@ -32,6 +32,7 @@
         </DockPanel>
 
         <DataGrid Grid.Row="2"
+                  Unloaded="FrameworkElement_OnUnloaded"
                   ItemsSource="{Binding Questions}">
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="Вопрос"

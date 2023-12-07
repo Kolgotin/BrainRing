@@ -6,12 +6,8 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace BrainRing.UI.Edit;
 
-//todo: никак не отслежу ошибку: "DeferRefresh" не разрешено во время выполнения операции AddNew или EditItem
-//System.Windows.Data.CollectionView.DeferRefresh()
 //полезные ссылки:
 //https://rsdn.org/forum/dotnet.gui/4001738.flat
-//https://stackoverflow.com/questions/20204592/wpf-datagrid-refresh-is-not-allowed-during-an-addnew-or-edititem-transaction-m
-//https://stackoverflow.com/questions/18281615/deferrefresh-is-not-allowed-during-an-addnew-or-edititem-transaction
 public class ProcessEditViewModel : AbstractGoNextCommandContainer
 {
     private object _currentContent;
@@ -116,9 +112,6 @@ public class ProcessEditViewModel : AbstractGoNextCommandContainer
     private async Task ExecuteSavePack()
     {
         var pack = CurrentPack.GetPack();
-        if (await ShowDialogService.SavePack(pack, _fileName))
-            await ShowDialogService.ShowInfo("Файл успешно сохранён");
-        else
-            await ShowDialogService.ShowError("Ошибка при сохранении файла");
+        await ShowDialogService.SavePack(pack, _fileName);
     }
 }

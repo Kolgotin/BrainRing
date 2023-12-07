@@ -38,7 +38,7 @@ public class ShowDialogService
         => await SelectFilePath(PackExtension);
 
     //todo: нарушает SRP - надо разнести выбор файла и сохранение
-    public static Task<bool> SavePack(Pack pack, string? filename)
+    public static async Task SavePack(Pack pack, string? filename)
     {
         try
         {
@@ -47,16 +47,18 @@ public class ShowDialogService
                 Filter = PackExtension,
                 FileName = filename ?? DefaultFileName
             };
+
             if (saveFileDialog.ShowDialog() == true)
-                FileManager.WriteFileManager(pack, saveFileDialog.FileName);
+            {
+                await FileManager.WriteFileManager(pack, saveFileDialog.FileName);
+                await ShowInfo("Файл успешно сохранён");
+            }
         }
         catch (Exception e)
         {
             //todo: логгер чтоли добавить
-            return Task.FromResult(false);
+            await ShowError("Ошибка при сохранении файла");
         }
-
-        return Task.FromResult(true);
     }
 
     private static async Task<string?> SelectFilePath(string filter)

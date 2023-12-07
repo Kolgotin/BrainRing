@@ -19,7 +19,7 @@ public class QuestionViewModel : AbstractNotifyPropertyChanged
 
     public QuestionViewModel(QuestionBase? question = null)
     {
-        if(question is null)
+        if (question is null)
         {
             _description = "";
             _cost = 1;

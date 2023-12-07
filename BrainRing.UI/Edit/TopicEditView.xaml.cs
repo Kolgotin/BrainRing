@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
 
 namespace BrainRing.UI.Edit;
 
@@ -10,5 +11,13 @@ public partial class TopicEditView : UserControl
     public TopicEditView()
     {
         InitializeComponent();
+    }
+
+    private void FrameworkElement_OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        if (sender is not DataGrid dataGrid)
+            return;
+
+        dataGrid.CommitEdit(DataGridEditingUnit.Row, true);
     }
 }

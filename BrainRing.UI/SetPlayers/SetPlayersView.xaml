@@ -10,7 +10,8 @@
     <Grid>
         <StackPanel VerticalAlignment="Center">
             <TextBlock Text="Добавить игроков"/>
-            <DataGrid ItemsSource="{Binding Players}"
+            <DataGrid Unloaded="FrameworkElement_OnUnloaded"
+                      ItemsSource="{Binding Players}"
                       HeadersVisibility="Column">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Имя"

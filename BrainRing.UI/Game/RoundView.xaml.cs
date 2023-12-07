@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
 
 namespace BrainRing.UI.Game;
 
@@ -10,5 +11,13 @@ public partial class RoundView : UserControl
     public RoundView()
     {
         InitializeComponent();
+    }
+
+    private void FrameworkElement_OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        if (sender is not DataGrid dataGrid)
+            return;
+
+        dataGrid.CommitEdit(DataGridEditingUnit.Row, true);
     }
 }

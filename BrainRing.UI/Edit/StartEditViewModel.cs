@@ -40,7 +40,7 @@ public class StartEditViewModel : AbstractGoNextCommandContainer
             if (fullFileName is null)
                 return;
 
-            var pack = FileManager.ReadPackFile(fullFileName);
+            var pack = await FileManager.ReadPackFile(fullFileName);
             FileName = Path.GetFileName(fullFileName);
             _pack = pack ?? new Pack();
             await ExecuteGoNext();

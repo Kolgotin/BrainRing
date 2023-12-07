@@ -28,7 +28,7 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
-                            <!--todo: если в блиц раунде нет вопросов кнопка будет отображаться, но ничего не делать-->
+                            <!--todo: обработать все кейсы: если в блиц раунде нет темы; есть тема, но нет вопросов; т.д. -->
                             <Button Grid.Row="0"
                                     Grid.Column="0"
                                     Grid.ColumnSpan="2"
@@ -86,6 +86,7 @@
                         </Grid.RowDefinitions>
 
                         <DataGrid Grid.Row="0"
+                                  Unloaded="FrameworkElement_OnUnloaded"
                                   ItemsSource="{Binding Topics}"
                                   VerticalAlignment="Center"
                                   HorizontalAlignment="Stretch"

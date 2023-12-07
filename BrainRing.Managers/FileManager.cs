@@ -16,13 +16,13 @@ public static class FileManager
         };
     }
 
-    public static bool WriteFileManager(Pack pack, string filePath)
+    public static async Task<bool> WriteFileManager(Pack pack, string filePath)
     {
         try
         {
             var jsonString = JsonSerializer.Serialize(pack, Options);
-            using var sw = new StreamWriter(filePath);
-            sw.Write(jsonString);
+            await using var sw = new StreamWriter(filePath);
+            await sw.WriteAsync(jsonString);
         }
         catch (Exception e)
         {
@@ -33,10 +33,10 @@ public static class FileManager
         return true;
     }
 
-    public static Pack? ReadPackFile(string filePath)
+    public static async Task<Pack?> ReadPackFile(string filePath)
     {
         using var sr = new StreamReader(filePath);
-        var jsonString = sr.ReadToEnd();
+        var jsonString = await sr.ReadToEndAsync();
         var pack = JsonSerializer.Deserialize<Pack>(jsonString);
         return pack;
     }

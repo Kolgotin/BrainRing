@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace BrainRing.UI.Start;
 
+//todo: добавить крутилку пока грузится пак
 public class StartViewModel : AbstractStageContainer
 {
     private readonly StartStage _stage;
@@ -51,7 +52,7 @@ public class StartViewModel : AbstractStageContainer
             if (fileName is null)
                 return;
 
-            var pack = FileManager.ReadPackFile(fileName);
+            var pack = await FileManager.ReadPackFile(fileName);
 
             if (pack is null || pack.Rounds.Count == 0)
             {

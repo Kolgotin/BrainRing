@@ -15,6 +15,8 @@ public class RoundViewModel : AbstractNotifyPropertyChanged,IDisposable
     private RoundTypes _selectedQuestionType;
     private string _name;
     private QuestionViewModel? _currentQuestion;
+
+    //todo: лучше использовать индекс и избавиться от энумератора
     private readonly IEnumerator<QuestionViewModel>? _enumerator;
 
     public RoundViewModel(RoundBase? round = null)
@@ -47,12 +49,12 @@ public class RoundViewModel : AbstractNotifyPropertyChanged,IDisposable
         Topics = new ObservableCollection<TopicViewModel>(list);
 
         AddTopicCommand = new RelayCommand(ExecuteAddTopic);
-        RemoveQuestionCommand = new RelayCommand<TopicViewModel>(ExecuteRemoveTopic);
+        RemoveTopicCommand = new RelayCommand<TopicViewModel>(ExecuteRemoveTopic);
         NextBlitzQuestionCommand = new AsyncRelayCommand(ExecuteNextBlitzQuestion);
     }
 
     public ICommand AddTopicCommand { get; }
-    public ICommand RemoveQuestionCommand { get; }
+    public ICommand RemoveTopicCommand { get; }
     public ICommand NextBlitzQuestionCommand { get; }
 
     public RoundTypes SelectedRoundType

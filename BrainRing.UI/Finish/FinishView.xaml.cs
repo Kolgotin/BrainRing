@@ -1,28 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace BrainRing.UI.Finish
+namespace BrainRing.UI.Finish;
+
+/// <summary>
+/// Interaction logic for FinishViewModel.xaml
+/// </summary>
+public partial class FinishView : UserControl
 {
-    /// <summary>
-    /// Interaction logic for FinishViewModel.xaml
-    /// </summary>
-    public partial class FinishView : UserControl
+    public FinishView()
     {
-        public FinishView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+    }
+
+    private void FrameworkElement_OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        if (sender is not DataGrid dataGrid)
+            return;
+
+        dataGrid.CommitEdit(DataGridEditingUnit.Row, true);
     }
 }
