@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using BrainRing.UI;
 
 namespace BrainRing;
 
